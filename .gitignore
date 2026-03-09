@@ -214,3 +214,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+TACO/data/batch_*
+TACO/data/unofficial
