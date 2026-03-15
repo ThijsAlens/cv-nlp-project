@@ -1,0 +1,27 @@
+{
+  "selected_classes": [
+    "Clear plastic bottle",
+    "Other plastic bottle",
+    "Glass bottle",
+    "Plastic bottle cap",
+    "Metal bottle cap"
+  ],
+  "split_counts": {
+    "train": {
+      "images": 338,
+      "annotations": 589
+    },
+    "val": {
+      "images": 42,
+      "annotations": 71
+    },
+    "test": {
+      "images": 43,
+      "annotations": 68
+    }
+  },
+  "skipped_missing_images": [],
+  "skipped_small_boxes": 0,
+  "used_symlinks": false,
+  "source_annotations": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\Yolo_test_v1\\data\\raw\\taco\\annotations.json"
+}

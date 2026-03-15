@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trash-detector"
+version = "0.1.0"
+description = "YOLO fine-tuning pipeline for TACO trash detection"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  "torch>=2.9.1",
+  "torchvision>=0.24.1",
+  "ultralytics>=8.4.21",
+  "opencv-python>=4.10",
+  "pyyaml>=6.0",
+  "tqdm>=4.66",
+  "requests>=2.32",
+  "numpy>=1.26",
+  "pillow>=10.0",
+  "matplotlib>=3.8",
+]
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu130", marker = "sys_platform == 'win32'" },
+]
+torchvision = [
+  { index = "pytorch-cu130", marker = "sys_platform == 'win32'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

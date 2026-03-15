@@ -1,0 +1,6 @@
+{
+  "save_dir": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\Yolo_test_v1\\runs\\train\\yolo11s_taco_all_classes",
+  "best_weights": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\Yolo_test_v1\\runs\\train\\yolo11s_taco_all_classes\\weights\\best.pt",
+  "last_weights": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\Yolo_test_v1\\runs\\train\\yolo11s_taco_all_classes\\weights\\last.pt",
+  "results_csv": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\Yolo_test_v1\\runs\\train\\yolo11s_taco_all_classes\\results.csv"
+}

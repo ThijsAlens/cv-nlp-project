@@ -1,0 +1,10 @@
+{
+  "description": "Focused subset for bottle and cap detection on TACO.",
+  "classes": [
+    "Clear plastic bottle",
+    "Other plastic bottle",
+    "Glass bottle",
+    "Plastic bottle cap",
+    "Metal bottle cap"
+  ]
+}
