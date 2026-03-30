@@ -217,3 +217,7 @@ __marimo__/
 
 TACO/data/batch_*
 TACO/data/unofficial
+
+runs/*
+!runs/detect/train*/weights/best.pt
+testing_projects/yolov8_total-dataset/dataset/*
