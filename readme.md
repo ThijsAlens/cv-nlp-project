@@ -1,4 +1,4 @@
-####Project: Smart Waste Sorter
+# Project: Smart Waste Sorter
 The goal of this project is to create an easy installable system that tells the user where to put the garbage. The system will assist users in correctly sorting their waste. 
 The goal of the system is the following:
 1. The user shows the waste to the camera

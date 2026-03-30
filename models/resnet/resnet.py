@@ -10,13 +10,13 @@ import config
 def get_data_loader(data_path: str, input_dimension: tuple=(224, 224), augment: bool=False, batch_size: int=32):
     """
     Creates a data loader for the specified dataset.
-    
+
     Args:
         data_path (str): Path to the dataset.
         input_dimension (tuple): Desired input size for the model (default: (224, 224)).
         augment (bool): Whether to apply data augmentation (default: False).
         batch_size (int): Number of samples per batch (default: 32).
-        
+
     Returns:
         DataLoader: A data loader for the specified dataset.
     """
@@ -65,7 +65,7 @@ def train_model(model, train_loader, val_loader, loss_fn, optimizer, device, epo
         
         for images, labels in tqdm(train_loader, desc="Training"):
             images, labels = images.to(device), labels.to(device)
-            
+
             # 1. Forward pass
             outputs = model(images)
             loss = loss_fn(outputs, labels)
