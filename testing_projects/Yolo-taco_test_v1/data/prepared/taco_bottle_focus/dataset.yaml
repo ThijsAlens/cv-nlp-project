@@ -1,0 +1,10 @@
+path: C:\Users\phill\Documents\School\MaNaMa\9_Computer Vision and NLP\Project\testing_projects\Yolo_test_v1\data\prepared\taco_bottle_focus
+train: images/train
+val: images/val
+test: images/test
+names:
+  0: Clear plastic bottle
+  1: Other plastic bottle
+  2: Glass bottle
+  3: Plastic bottle cap
+  4: Metal bottle cap
