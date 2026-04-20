@@ -57,4 +57,4 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"Error occurred while loading the model: {e}")
             exit(1)
-        test_model(model, 'dataset/test/images')
+        test_model(model, config.TEST_DIR_PATH)
