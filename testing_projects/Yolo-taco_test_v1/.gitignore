@@ -211,6 +211,7 @@ data/**/*.jpg
 data/**/*.jpeg
 data/**/*.png
 data/**/*.gif
+data/**/*.txt
 
 # Model files
 *.pt
@@ -222,3 +223,5 @@ data/**/*.gif
 # Re-include model files inside it
 !runs/train/latest/**/*.pt
 
+# Legacy folder
+legacy/

@@ -1,0 +1,11 @@
+path: C:\Users\phill\Documents\School\MaNaMa\9_Computer Vision and NLP\Project\testing_projects\GitHub\cv-nlp-project\testing_projects\Yolo-taco_test_v1\data\Totaal_dataset
+train: train/images
+val: valid/images
+nc: 5
+names:
+- Cardboard
+- Glass
+- Metal
+- Paper
+- Plastic
+test: test/images

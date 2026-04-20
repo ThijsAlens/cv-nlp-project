@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
-"""Train a YOLO detector on a prepared TACO dataset."""
+"""Train a detector on a prepared dataset (CLI). Defaults target Totaal_dataset."""
 
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
+
+_PROJECT_ROOT = Path(__file__).resolve().parents[1]
+_SRC = _PROJECT_ROOT / "src"
+if _SRC.is_dir() and str(_SRC) not in sys.path:
+    sys.path.insert(0, str(_SRC))
 
 from trash_detector.training.config import TrainConfig
 from trash_detector.training.trainer import YoloTrainer
@@ -17,11 +23,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--data-yaml",
         type=Path,
-        default=Path("data/prepared/taco_bottle_focus/dataset.yaml"),
+        default=Path("data/Totaal_dataset/dataset.ultralytics.yaml"),
         help="Path relative to the project root, unless absolute.",
     )
-    parser.add_argument("--model", default="yolov8n.pt", help="Base checkpoint used for fine-tuning.")
-    parser.add_argument("--run-name", default="yolov8n_taco_bottle_focus")
+    parser.add_argument("--model", default="yolo11s.pt", help="Base checkpoint used for fine-tuning.")
+    parser.add_argument("--run-name", default="yolo11s_total_cli")
     parser.add_argument("--epochs", type=int, default=60)
     parser.add_argument("--imgsz", type=int, default=640)
     parser.add_argument("--batch", type=int, default=16)

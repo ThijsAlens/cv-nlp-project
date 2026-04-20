@@ -1,0 +1,17 @@
+# Paths are relative to this file's directory (Roboflow zip used ../ when yaml lived one level up).
+train: train/images
+val: valid/images
+test: test/images
+nc: 5
+names:
+- Cardboard
+- Glass
+- Metal
+- Paper
+- Plastic
+roboflow:
+  workspace: student-utr07
+  project: garbage-classifier-oehkt
+  version: 27
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/student-utr07/garbage-classifier-oehkt/dataset/27

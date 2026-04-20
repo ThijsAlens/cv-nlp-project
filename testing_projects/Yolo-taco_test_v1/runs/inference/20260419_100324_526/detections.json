@@ -1,0 +1,32 @@
+{
+  "run_id": "20260419_100324_526",
+  "weights": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\train\\yolo11s_garbage_5c2\\weights\\best.pt",
+  "target_image": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\data\\Totaal_dataset\\test\\images\\extra_2f95fa20-IMG_4201_jpg.rf.a8df4e4940a0c2798b04310da1d75512.jpg",
+  "detections": [
+    {
+      "material_name": "Metal",
+      "bin": "PMD",
+      "confidence": 0.9337610602378845
+    },
+    {
+      "material_name": "Metal",
+      "bin": "PMD",
+      "confidence": 0.9244956374168396
+    },
+    {
+      "material_name": "Metal",
+      "bin": "PMD",
+      "confidence": 0.9202731251716614
+    },
+    {
+      "material_name": "Metal",
+      "bin": "PMD",
+      "confidence": 0.9177647829055786
+    },
+    {
+      "material_name": "Metal",
+      "bin": "PMD",
+      "confidence": 0.91108238697052
+    }
+  ]
+}

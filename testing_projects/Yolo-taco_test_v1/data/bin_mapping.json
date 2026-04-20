@@ -1,0 +1,19 @@
+{
+  "schema_version": 2,
+  "dataset_note": "Maps material class names from the Totaal waste dataset to household bin keys.",
+  "default_bin": "Rest",
+  "bin_descriptions": {
+    "PMD": "Plastic and metal packaging and drink cartons (typical Belgian PMD stream).",
+    "GFT": "Vegetable, fruit and garden waste.",
+    "Paper": "Paper and cardboard packaging that belongs in paper recycling.",
+    "Batteries": "Used batteries only.",
+    "Rest": "Residual waste when no other bin applies, or items that must not go in the other streams."
+  },
+  "material_to_bin": {
+    "Cardboard": "Paper",
+    "Glass": "Rest",
+    "Metal": "PMD",
+    "Paper": "Paper",
+    "Plastic": "PMD"
+  }
+}

@@ -4,11 +4,15 @@
 from __future__ import annotations
 
 import argparse
-import json
+import sys
 from pathlib import Path
-from typing import Any
 
-from ultralytics import YOLO
+_PROJECT_ROOT = Path(__file__).resolve().parents[1]
+_SRC = _PROJECT_ROOT / "src"
+if _SRC.is_dir() and str(_SRC) not in sys.path:
+    sys.path.insert(0, str(_SRC))
+
+from trash_detector.training.eval_report import evaluate_checkpoint, save_evaluation_report
 
 
 def parse_args() -> argparse.Namespace:
@@ -61,76 +65,6 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def safe_float(value: Any) -> float | None:
-    """Convert values to float when possible, otherwise return None."""
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
-
-
-def extract_metrics(metrics: Any, split: str) -> dict[str, Any]:
-    """Extract a compact summary from an Ultralytics metrics object."""
-    class_names = {}
-    if hasattr(metrics, "names") and metrics.names is not None:
-        class_names = {int(k): str(v) for k, v in dict(metrics.names).items()}
-
-    per_class: list[dict[str, Any]] = []
-    maps = list(getattr(metrics.box, "maps", []))
-
-    # Per-class precision/recall are not always exposed as stable public fields
-    # across Ultralytics versions, so this summary guarantees mAP values and
-    # includes the class name mapping.
-    for class_id, class_name in class_names.items():
-        map_5095 = safe_float(maps[class_id]) if class_id < len(maps) else None
-        per_class.append(
-            {
-                "class_id": class_id,
-                "class_name": class_name,
-                "map50_95": map_5095,
-            }
-        )
-
-    return {
-        "split": split,
-        "num_classes": len(class_names),
-        "metrics": {
-            "precision": safe_float(metrics.box.mp),
-            "recall": safe_float(metrics.box.mr),
-            "map50": safe_float(metrics.box.map50),
-            "map75": safe_float(metrics.box.map75),
-            "map50_95": safe_float(metrics.box.map),
-        },
-        "per_class": per_class,
-    }
-
-
-def run_evaluation(
-    model: YOLO,
-    data_yaml: Path,
-    split: str,
-    imgsz: int,
-    batch: int,
-    device: str,
-    project: Path,
-    run_name: str,
-) -> dict[str, Any]:
-    """Run Ultralytics evaluation on one dataset split and return summary metrics."""
-    metrics = model.val(
-        data=str(data_yaml),
-        split=split,
-        imgsz=imgsz,
-        batch=batch,
-        device=device,
-        project=str(project),
-        name=run_name,
-        plots=True,
-        save_json=True,
-        verbose=True,
-    )
-    return extract_metrics(metrics, split)
-
-
 def main() -> None:
     """Evaluate the checkpoint on validation and test and save a combined report."""
     args = parse_args()
@@ -140,34 +74,16 @@ def main() -> None:
     project = args.project.resolve()
     output = args.output.resolve()
 
-    project.mkdir(parents=True, exist_ok=True)
-    output.parent.mkdir(parents=True, exist_ok=True)
-
-    model = YOLO(str(weights))
-
-    summary = {
-        "weights": str(weights),
-        "data_yaml": str(data_yaml),
-        "imgsz": args.imgsz,
-        "batch": args.batch,
-        "device": args.device,
-        "results": {},
-    }
-
-    for split in ("val", "test"):
-        run_name = f"{args.name_prefix}_{split}"
-        summary["results"][split] = run_evaluation(
-            model=model,
-            data_yaml=data_yaml,
-            split=split,
-            imgsz=args.imgsz,
-            batch=args.batch,
-            device=args.device,
-            project=project,
-            run_name=run_name,
-        )
-
-    output.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    summary = evaluate_checkpoint(
+        weights=weights,
+        data_yaml=data_yaml,
+        imgsz=args.imgsz,
+        batch=args.batch,
+        device=args.device,
+        eval_project=project,
+        run_name_prefix=args.name_prefix,
+    )
+    save_evaluation_report(summary, output)
 
     print("\nEvaluation summary\n")
     for split in ("val", "test"):
@@ -176,9 +92,11 @@ def main() -> None:
         print(f"[{split}]")
         print(f"  Precision : {metrics['precision']}")
         print(f"  Recall    : {metrics['recall']}")
+        print(f"  F1 (mean) : {metrics['f1']}")
         print(f"  mAP50     : {metrics['map50']}")
         print(f"  mAP75     : {metrics['map75']}")
         print(f"  mAP50-95  : {metrics['map50_95']}")
+        print(f"  Artifacts : {result.get('ultralytics_save_dir')}")
         print()
 
     print(f"Combined summary saved to: {output}")

@@ -1,97 +1,37 @@
-# Trash detection with YOLO + TACO
+# Material waste detection (`Totaal_dataset` + bin mapping)
 
-This project builds a complete **object detection** pipeline for litter/trash recognition using the **TACO** dataset and a pretrained **Ultralytics YOLO** model.
+This project trains and runs **object detection** on **`data/Totaal_dataset`** (Ultralytics-style layout: splits, images, label `.txt` files, and `data.yaml` / generated `dataset.ultralytics.yaml`). Class names are **material** labels (for example Cardboard, Glass, Metal, Paper, Plastic). **`data/bin_mapping.json`** maps each material string to a **bin key** (for example PMD, Paper, Rest).
 
-The default setup is intentionally biased toward a **working pipeline on modest hardware** rather than squeezing out the last bit of accuracy. The focused default task is bottle-and-cap detection, because TACO already contains separate labels such as:
+The installable package is **`trash-detector`** (`pyproject.toml`). Library code is under **`src/trash_detector/`**; runnable scripts are under **`scripts/`**.
 
-- `Clear plastic bottle`
-- `Other plastic bottle`
-- `Glass bottle`
-- `Plastic bottle cap`
-- `Metal bottle cap`
-
-That makes it possible to train a detector that can later support rule-based instructions such as *remove the cap before recycling the bottle*.
+For module-level detail and data flow, see **`HOW_IT_WORKS.md`**.
 
 ## Project structure
 
 ```text
-trash_detection_yolo_taco/
-├── configs/
-│   └── label_maps/
-│       └── bottle_focus.json     # Focused class subset
+project/
 ├── data/
-│   ├── raw/                      # Downloaded TACO assets
-│   └── prepared/                 # YOLO-formatted datasets
-├── assets/
-│   └── taco_category_summary.json
-├── runs/
-│   └── train/                    # Ultralytics training outputs
+│   ├── Totaal_dataset/           # Images, labels, data.yaml, dataset.ultralytics.yaml
+│   └── bin_mapping.json          # material_to_bin for demos and apps
 ├── scripts/
-│   ├── download_assets.py        # Download annotations, images, and warm up weights
-│   ├── prepare_taco.py           # Convert COCO TACO to YOLO format
-│   ├── train.py                  # Fine-tune YOLO on prepared data
-│   ├── predict.py                # Run inference
-│   └── full_pipeline.py          # One-command end-to-end pipeline
+│   ├── run_train.py              # Primary training (edit CONFIG at top)
+│   ├── train.py                  # CLI training (defaults to Totaal paths)
+│   ├── evaluate.py               # Evaluate a checkpoint
+│   ├── predict.py                # Inference JSON (+ optional --save)
+│   └── inference_crop_showcase.py  # Crops + material + bin under runs/inference/
+├── legacy/cv_training_archive/   # TACO-only scripts, configs, optional artifacts
+├── main_runner.py                # Small demo: load bin_mapping.json only
 └── src/trash_detector/
-    ├── data/
-    ├── inference/
-    ├── training/
-    └── utils/
 ```
 
-## Why this setup
-
-A few design choices are deliberate:
-
-1. **Detection, not classification**  
-   The TACO task and the bottle-cap use case are spatial: you need object locations, not just one label for the whole image.
-
-2. **YOLOv8n by default**  
-   On an RTX 4060 mobile with 8 GB VRAM, `yolov8n.pt` is the safest default for a full working pipeline. Once the pipeline is stable, trying `yolov8s.pt` on a T4 is reasonable.
-
-3. **Focused label subset first**  
-   TACO has 60 classes, but many are rare. The default configuration keeps only bottle and cap classes, which is usually a better first milestone than training all 60 classes immediately.
-
-4. **Partial backbone freezing**  
-   The default training config freezes the first 10 layers to stabilize early fine-tuning on a relatively small dataset. This is configurable.
-
-5. **Symlinked prepared dataset by default**  
-   Preparing the YOLO dataset uses symlinks instead of copying images to avoid doubling disk usage. Use `--copy-images` on Windows if symlinks are inconvenient.
-
-## Recommended environments
-
-### Laptop: RTX 4060 mobile, 8 GB VRAM
-
-Start with:
-
-- model: `yolov8n.pt`
-- image size: `640`
-- batch size: `16`
-- epochs: `60`
-- mixed precision: enabled
-- workers: `4`
-
-If you hit CUDA out-of-memory, reduce batch size in this order: `16 -> 12 -> 8`.
-
-### School cloud: NVIDIA T4, 16 GB VRAM
-
-Good next step:
-
-- model: `yolov8s.pt`
-- image size: `640`
-- batch size: `16` or `24`
-- epochs: `80`
-
 ## Installation
-
-Create a virtual environment and install the package in editable mode.
 
 ### Linux / macOS
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -U pip
+python -m pip install -U pip
 pip install -e .
 ```
 
@@ -104,92 +44,65 @@ python -m pip install -U pip
 pip install -e .
 ```
 
-## Step 1: download annotations, images, and YOLO weights
-
-This downloads the official TACO annotations JSON, downloads TACO images from the URLs referenced in the annotations, and warms up the YOLO checkpoint cache.
+With **`uv`**:
 
 ```bash
-uv run python scripts/download_assets.py --weights yolov8n.pt
+uv sync
 ```
 
-For a quick smoke test instead of the full dataset:
+## Dataset: `data/Totaal_dataset`
+
+Keep your **Totaal** export under **`data/Totaal_dataset/`** with `data.yaml` (or `dataset.yaml`), image folders per split, and matching `labels/`. The first run of **`load_dataset_spec()`** (via **`scripts/run_train.py`**) writes **`dataset.ultralytics.yaml`** with an absolute `path` for reliable training.
+
+Align **`data/bin_mapping.json`** with the **`names`** list in that YAML so **`material_to_bin`** keys match detector class strings.
+
+## Train
+
+Edit **`CONFIG`** in **`scripts/run_train.py`**, then:
 
 ```bash
-uv run python scripts/download_assets.py --weights yolov8n.pt --max-images 200
+uv run python scripts/run_train.py
 ```
 
-## Step 2: convert TACO into YOLO format
-
-This converts the COCO-format TACO annotations into YOLO text labels and creates train/val/test splits.
+Or use the CLI trainer (defaults point at **`data/Totaal_dataset/dataset.ultralytics.yaml`**):
 
 ```bash
-uv run python scripts/prepare_taco.py
+uv run python scripts/train.py --data-yaml data/Totaal_dataset/dataset.ultralytics.yaml --model yolo11s.pt
 ```
 
-The default output dataset will be created at:
+Weights land under **`runs/train/<run_name>/weights/best.pt`**.
 
-```text
-data/prepared/taco_bottle_focus/
-```
-
-Its YOLO dataset file is:
-
-```text
-data/prepared/taco_bottle_focus/dataset.yaml
-```
-
-## Step 3: train the detector
+## Evaluate
 
 ```bash
-uv run python scripts/train.py `
-  --data-yaml data/prepared/taco_bottle_focus/dataset.yaml `
-  --model yolov8n.pt `
-  --epochs 60 `
-  --batch 16 `
-  --imgsz 640 `
-  --device 0
+uv run python scripts/evaluate.py runs/train/<your_run>/weights/best.pt data/Totaal_dataset/dataset.ultralytics.yaml --device 0
 ```
 
-Trained weights will end up under:
-
-```text
-runs/train/<run_name>/weights/best.pt
-```
-
-## One-command pipeline
-
-If the machine is already set up and you want the end-to-end flow in one command:
+## Predict
 
 ```bash
-python scripts/full_pipeline.py --model yolov8n.pt --epochs 60 --batch 16 --device 0
+uv run python scripts/predict.py runs/train/<your_run>/weights/best.pt path/to/image.jpg --save
 ```
 
-## Run inference
+## Material + bin showcase
+
+Edit **`CONFIG`** in **`scripts/inference_crop_showcase.py`**, then:
 
 ```bash
-python scripts/predict.py runs/train/yolov8n_taco_bottle_focus/weights/best.pt path/to/test_image.jpg --save
+uv run python scripts/inference_crop_showcase.py
 ```
 
-## Switching to all TACO classes
+## Bin mapping only
 
-The project defaults to the focused bottle-cap subset. To train on all classes, modify `scripts/prepare_taco.py` to pass `label_map_path=None`, or create another script that calls `prepare_yolo_dataset(..., label_map_path=None)`.
+```bash
+uv run python main_runner.py
+```
 
-That is not the recommended first run because many TACO classes are sparse.
+## TACO-only tools
 
-## Practical notes
+TACO download, prepare, and analysis scripts live under **`legacy/cv_training_archive/`** (see **`legacy/cv_training_archive/README.md`**).
 
-- TACO image hosting depends on external URLs. Some images may fail to download. Failures are logged to `assets/taco_download_failures.json`.
-- Very small boxes are dropped by default using `--min-box-pixels 8` because tiny targets tend to create noisy labels for a first-pass detector.
-- The dataset split is image-level random with a fixed seed for reproducibility.
-- For deployment later, `scripts/train.py --export-onnx` can export the best checkpoint to ONNX.
+## Further reading
 
-## Likely next extension
-
-Detection alone will let you identify bottles and caps separately. To produce instructions such as *remove the cap from this bottle first*, the next step is usually a **lightweight relational rule layer** on top of detections, for example:
-
-- detect a `Glass bottle`
-- detect a nearby `Plastic bottle cap`
-- check whether the cap box overlaps or sits near the bottle neck
-- emit a symbolic action: `remove_cap_before_recycling`
-
-That rule layer is intentionally not baked into the training code yet, so the current project remains cleanly scoped to dataset preparation, fine-tuning, and inference.
+- **`HOW_IT_WORKS.md`**: training wrappers, bin resolution, layout table.
+- **`legacy/cv_training_archive/README.md`**: TACO entry points only.

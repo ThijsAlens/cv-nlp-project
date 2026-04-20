@@ -27,6 +27,12 @@ def write_json(path: Path, payload: Any) -> None:
         json.dump(payload, handle, indent=2, ensure_ascii=False)
 
 
+def read_yaml(path: Path) -> Any:
+    """Read a YAML file and return its Python representation."""
+    with path.open("r", encoding="utf-8") as handle:
+        return yaml.safe_load(handle)
+
+
 def write_yaml(path: Path, payload: Any) -> None:
     """Write a Python object to YAML."""
     with path.open("w", encoding="utf-8") as handle:

@@ -35,3 +35,10 @@ uv run python scripts/train.py `
   --patience 50 `
   --cache
 
+That package is the official Python interface from Ultralytics for working with YOLO-family models. It gives you a high-level API to:
+- load pretrained YOLO models
+- run inference/prediction
+- train on your own dataset
+- validate
+- export to other formats
+- use related vision tasks like segmentation, pose, tracking, and classification

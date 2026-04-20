@@ -1,0 +1,16 @@
+
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 79/79 11.6it/s 6.8s
+                   all        628        897      0.931      0.863      0.927      0.799
+             Cardboard         40         41      0.961      0.829      0.886      0.728
+                 Glass         71         84      0.902      0.905      0.949      0.811
+                 Metal        258        485      0.916      0.845      0.932      0.779
+                 Paper         81         84      0.937      0.886      0.953      0.857
+               Plastic        185        203      0.936      0.852      0.917      0.817
+Speed: 1.3ms preprocess, 6.0ms inference, 0.0ms loss, 0.7ms postprocess per image
+Saving C:\Users\phill\Documents\School\MaNaMa\9_Computer Vision and NLP\Project\testing_projects\GitHub\cv-nlp-project\testing_projects\Yolo-taco_test_v1\runs\train\yolo11s_garbage_5c2\post_eval\split_test\predictions.json...
+Results saved to C:\Users\phill\Documents\School\MaNaMa\9_Computer Vision and NLP\Project\testing_projects\GitHub\cv-nlp-project\testing_projects\Yolo-taco_test_v1\runs\train\yolo11s_garbage_5c2\post_eval\split_test
+Evaluation metrics saved to: C:\Users\phill\Documents\School\MaNaMa\9_Computer Vision and NLP\Project\testing_projects\GitHub\cv-nlp-project\testing_projects\Yolo-taco_test_v1\runs\train\yolo11s_garbage_5c2\evaluation_metrics.json
+  [val] mAP50-95=0.7423568494471864  P=0.8985579962783732  R=0.7992031463243067  F1=0.8424037119328558
+  [test] mAP50-95=0.7985712936578075  P=0.9305273255837895  R=0.863431717024946  F1=0.8951798366991295
+
+  

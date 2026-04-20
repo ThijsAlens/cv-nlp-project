@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "trash-detector"
-version = "0.1.0"
-description = "YOLO fine-tuning pipeline for TACO trash detection"
+version = "0.2.0"
+description = "Material waste detection: training, inference, and bin mapping for Totaal_dataset."
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
 dependencies = [

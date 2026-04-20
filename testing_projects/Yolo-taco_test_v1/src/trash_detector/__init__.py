@@ -1,1 +1,1 @@
-"""Trash detection training pipeline built around Ultralytics YOLO."""
+"""Trash detection: training wrappers, inference, TACO helpers (legacy scripts), and bin mapping."""

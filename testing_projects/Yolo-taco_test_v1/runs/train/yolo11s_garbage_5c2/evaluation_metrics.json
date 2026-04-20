@@ -1,0 +1,133 @@
+{
+  "weights": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\train\\yolo11s_garbage_5c2\\weights\\best.pt",
+  "data_yaml": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\data\\Totaal_dataset\\dataset.ultralytics.yaml",
+  "imgsz": 640,
+  "batch": 8,
+  "device": "0",
+  "results": {
+    "val": {
+      "split": "val",
+      "num_classes": 5,
+      "metrics": {
+        "precision": 0.8985579962783732,
+        "recall": 0.7992031463243067,
+        "f1": 0.8424037119328558,
+        "f1_from_precision_recall": 0.8459733937362255,
+        "map50": 0.8659609641005389,
+        "map75": 0.8151472278948505,
+        "map50_95": 0.7423568494471864
+      },
+      "per_class": [
+        {
+          "class_id": 0,
+          "class_name": "Cardboard",
+          "precision": 0.8570879939313978,
+          "recall": 0.6049382716049383,
+          "f1": 0.7092695143503461,
+          "map50": 0.6870565753246944,
+          "map50_95": 0.5398541209752812
+        },
+        {
+          "class_id": 1,
+          "class_name": "Glass",
+          "precision": 0.900883339575781,
+          "recall": 0.8597906491246571,
+          "f1": 0.8798574594620601,
+          "map50": 0.9244622600342005,
+          "map50_95": 0.824358064436266
+        },
+        {
+          "class_id": 2,
+          "class_name": "Metal",
+          "precision": 0.9076498657565518,
+          "recall": 0.8665371242444415,
+          "f1": 0.8866171479400775,
+          "map50": 0.9317985544050312,
+          "map50_95": 0.8038111904550942
+        },
+        {
+          "class_id": 3,
+          "class_name": "Paper",
+          "precision": 0.9268248135237513,
+          "recall": 0.7474747474747475,
+          "f1": 0.8275438393220926,
+          "map50": 0.8402576653039945,
+          "map50_95": 0.7142515598383093
+        },
+        {
+          "class_id": 4,
+          "class_name": "Plastic",
+          "precision": 0.9003439686043841,
+          "recall": 0.9172749391727494,
+          "f1": 0.908730598589703,
+          "map50": 0.9462297654347739,
+          "map50_95": 0.8295093115309818
+        }
+      ],
+      "ultralytics_save_dir": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\train\\yolo11s_garbage_5c2\\post_eval\\split_val",
+      "note": "Object-detection metrics (mAP, P, R, F1 at max-F1 confidence). There is no single 'accuracy' like in image classification; see per-class boxes and mAP."
+    },
+    "test": {
+      "split": "test",
+      "num_classes": 5,
+      "metrics": {
+        "precision": 0.9305273255837895,
+        "recall": 0.863431717024946,
+        "f1": 0.8951798366991295,
+        "f1_from_precision_recall": 0.8957248046188254,
+        "map50": 0.9273609041735604,
+        "map75": 0.8722801716686526,
+        "map50_95": 0.7985712936578075
+      },
+      "per_class": [
+        {
+          "class_id": 0,
+          "class_name": "Cardboard",
+          "precision": 0.9614756507387175,
+          "recall": 0.8292682926829268,
+          "f1": 0.8904916576971127,
+          "map50": 0.8862591455645803,
+          "map50_95": 0.7280853566412521
+        },
+        {
+          "class_id": 1,
+          "class_name": "Glass",
+          "precision": 0.9019608037771963,
+          "recall": 0.9047619047619048,
+          "f1": 0.9033591828885496,
+          "map50": 0.9494312110015248,
+          "map50_95": 0.8114141431649416
+        },
+        {
+          "class_id": 2,
+          "class_name": "Metal",
+          "precision": 0.9157589006679305,
+          "recall": 0.845360824742268,
+          "f1": 0.8791528348288767,
+          "map50": 0.9315178617268849,
+          "map50_95": 0.7793124827460672
+        },
+        {
+          "class_id": 3,
+          "class_name": "Paper",
+          "precision": 0.9370144528403554,
+          "recall": 0.8855508141691579,
+          "f1": 0.9105560460532068,
+          "map50": 0.9527565681242853,
+          "map50_95": 0.8570681073579033
+        },
+        {
+          "class_id": 4,
+          "class_name": "Plastic",
+          "precision": 0.9364268198947469,
+          "recall": 0.8522167487684729,
+          "f1": 0.8923394620279013,
+          "map50": 0.9168397344505269,
+          "map50_95": 0.8169763783788726
+        }
+      ],
+      "ultralytics_save_dir": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\train\\yolo11s_garbage_5c2\\post_eval\\split_test",
+      "note": "Object-detection metrics (mAP, P, R, F1 at max-F1 confidence). There is no single 'accuracy' like in image classification; see per-class boxes and mAP."
+    }
+  }
+}
