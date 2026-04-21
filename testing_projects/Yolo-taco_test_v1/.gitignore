@@ -222,6 +222,7 @@ data/**/*.txt
 
 # Re-include model files inside it
 !runs/train/latest/**/*.pt
+!runs/train/yolo11s_garbage_5c-2/**/*.pt
 
 # Legacy folder
 legacy/
