@@ -41,8 +41,7 @@ def test_model(model, test_folder_path) -> None:
     for filename in os.listdir(test_folder_path):
         if filename.endswith(('.jpg', '.png')):
             image_path = os.path.join(test_folder_path, filename)
-            results = model(image_path)
-            results.save(save_dir='tests')
+            model(image_path, save=True, project='tests', name='results', exist_ok=True)
     return
 
 if __name__ == "__main__":
