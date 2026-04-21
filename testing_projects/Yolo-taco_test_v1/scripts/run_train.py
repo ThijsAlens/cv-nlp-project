@@ -26,6 +26,9 @@ CONFIG = {
     "patience": 20,
     "cache": False,
     "amp": True,
+    # Ultralytics 'cls_pw': inverse-frequency weighting for imbalanced class counts (see TrainConfig).
+    "balanced_training": True,
+    "balanced_cls_pw": 0.25,
     "export_onnx": True,
     # After training: run Ultralytics val on chosen splits (saves confusion matrix, PR/F1 curves, predictions JSON).
     "run_post_train_eval": True,
@@ -74,6 +77,8 @@ def main() -> None:
         cache=CONFIG["cache"],
         amp=CONFIG["amp"],
         project=train_project,
+        balanced_training=bool(CONFIG["balanced_training"]),
+        balanced_cls_pw=float(CONFIG["balanced_cls_pw"]),
         extra_train_args=dict(CONFIG["extra_train_args"]),
     )
     trainer = YoloTrainer(cfg)

@@ -72,6 +72,25 @@ uv run python scripts/train.py --data-yaml data/Totaal_dataset/dataset.ultralyti
 
 Weights land under **`runs/train/<run_name>/weights/best.pt`**.
 
+### Imbalanced class counts (optional)
+
+If some materials appear much more often in the training labels than others, the detector can overfit to frequent classes and underperform on rare ones. Ultralytics supports **inverse-frequency weighting** on the **classification** part of the loss via the training argument **`cls_pw`**.
+
+In this project:
+
+- Set **`balanced_training`: `True`** in the **`CONFIG`** dict in **`scripts/run_train.py`** to enable that behavior (it passes **`cls_pw`** to `YOLO.train()`).
+- **`balanced_cls_pw`** controls **how strong** the rebalancing is: **`0.0`** means no extra class weighting (Ultralytics default when you do not enable our flag). Values **above `0`** tell Ultralytics to compute per-class weights from label counts (roughly based on inverse frequency, raised to the power **`balanced_cls_pw`**) so rare classes contribute more to the classification loss. **`0.25`** is a common starting point; increase toward **`1.0`** for stronger upweighting of rare classes if metrics on those classes are still poor.
+
+CLI equivalent:
+
+```bash
+uv run python scripts/train.py --data-yaml data/Totaal_dataset/dataset.ultralytics.yaml --balanced-training --balanced-cls-pw 0.25
+```
+
+Anything you put in **`extra_train_args`** in **`run_train.py`** (including an explicit **`cls_pw`**) is merged **after** these settings and **overrides** them if the same key appears twice. The effective values are also written to **`run_summary.json`** under each run.
+
+**Requirement:** the **`cls_pw`** training argument exists only in **Ultralytics 8.4.40 and newer**. Use **`uv sync`**, **`pip install -U 'ultralytics>=8.4.40'`**, or match **`pyproject.toml`** so balanced training does not raise a configuration error.
+
 ## Evaluate
 
 ```bash

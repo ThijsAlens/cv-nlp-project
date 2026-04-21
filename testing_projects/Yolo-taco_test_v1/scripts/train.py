@@ -37,6 +37,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--patience", type=int, default=20)
     parser.add_argument("--cache", action="store_true")
     parser.add_argument("--no-amp", action="store_true", help="Disable mixed precision.")
+    parser.add_argument(
+        "--balanced-training",
+        action="store_true",
+        help="Enable Ultralytics cls_pw (inverse-frequency class weights on classification loss).",
+    )
+    parser.add_argument(
+        "--balanced-cls-pw",
+        type=float,
+        default=0.25,
+        help="cls_pw when --balanced-training is set (0.25 moderate, 1.0 full). Default: 0.25.",
+    )
     parser.add_argument("--export-onnx", action="store_true")
     return parser.parse_args()
 
@@ -58,6 +69,8 @@ if __name__ == "__main__":
         cache=args.cache,
         amp=not args.no_amp,
         project=str(args.project_root / "runs" / "train"),
+        balanced_training=args.balanced_training,
+        balanced_cls_pw=args.balanced_cls_pw,
     )
     trainer = YoloTrainer(config)
     summary = trainer.train()

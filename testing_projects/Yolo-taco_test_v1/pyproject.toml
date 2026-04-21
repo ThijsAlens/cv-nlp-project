@@ -11,7 +11,7 @@ requires-python = ">=3.11,<3.13"
 dependencies = [
   "torch>=2.9.1",
   "torchvision>=0.24.1",
-  "ultralytics>=8.4.21",
+  "ultralytics>=8.4.40",
   "opencv-python>=4.10",
   "pyyaml>=6.0",
   "tqdm>=4.66",

@@ -25,5 +25,10 @@ class TrainConfig:
     cache: bool = False
     amp: bool = True
     project: str = "runs/train"
+    # When True, pass Ultralytics 'cls_pw' so rare classes get higher weight in the classification loss.
+    balanced_training: bool = False
+    # Strength of inverse-frequency weighting: 0.25 is a common starting point; use 1.0 for full weighting.
+    # Ignored when 'balanced_training' is False unless you set 'cls_pw' via 'extra_train_args'.
+    balanced_cls_pw: float = 0.25
     #: Extra keyword arguments merged into ``YOLO.train()`` (override defaults from :class:`YoloTrainer`).
     extra_train_args: dict[str, Any] = field(default_factory=dict)

@@ -1,0 +1,14 @@
+{
+  "save_dir": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\train\\yolo11s_garbage_5c-2",
+  "best_weights": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\train\\yolo11s_garbage_5c-2\\weights\\best.pt",
+  "last_weights": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\train\\yolo11s_garbage_5c-2\\weights\\last.pt",
+  "results_csv": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\train\\yolo11s_garbage_5c-2\\results.csv",
+  "balanced_training": true,
+  "balanced_cls_pw": 0.25,
+  "cls_pw": 0.25,
+  "evaluation_metrics_json": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\train\\yolo11s_garbage_5c-2\\evaluation_metrics.json",
+  "post_eval_ultralytics_dirs": {
+    "val": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\train\\yolo11s_garbage_5c-2\\post_eval\\split_val",
+    "test": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\train\\yolo11s_garbage_5c-2\\post_eval\\split_test"
+  }
+}
