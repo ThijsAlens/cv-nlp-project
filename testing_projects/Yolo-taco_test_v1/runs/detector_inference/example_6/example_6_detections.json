@@ -1,0 +1,83 @@
+{
+  "image": {
+    "path": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\data\\Totaal_dataset\\inference_tests_visual\\example_6.jpg",
+    "width": 640,
+    "height": 640
+  },
+  "model_path": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\train\\yolo11s_garbage_5c-2\\weights\\best.pt",
+  "output_dir": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\detector_inference\\example_6",
+  "json_path": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\detector_inference\\example_6\\example_6_detections.json",
+  "num_detections": 5,
+  "detections": [
+    {
+      "index": 0,
+      "class_id": 2,
+      "material": "Metal",
+      "bin": "PMD",
+      "confidence": 0.9124,
+      "bbox_xyxy": [
+        12.9,
+        134.26,
+        128.09,
+        309.71
+      ],
+      "crop_path": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\detector_inference\\example_6\\example_6_det00_Metal.jpg"
+    },
+    {
+      "index": 1,
+      "class_id": 2,
+      "material": "Metal",
+      "bin": "PMD",
+      "confidence": 0.912,
+      "bbox_xyxy": [
+        121.52,
+        168.9,
+        227.01,
+        357.82
+      ],
+      "crop_path": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\detector_inference\\example_6\\example_6_det01_Metal.jpg"
+    },
+    {
+      "index": 2,
+      "class_id": 2,
+      "material": "Metal",
+      "bin": "PMD",
+      "confidence": 0.9025,
+      "bbox_xyxy": [
+        237.02,
+        202.72,
+        337.93,
+        398.05
+      ],
+      "crop_path": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\detector_inference\\example_6\\example_6_det02_Metal.jpg"
+    },
+    {
+      "index": 3,
+      "class_id": 2,
+      "material": "Metal",
+      "bin": "PMD",
+      "confidence": 0.8973,
+      "bbox_xyxy": [
+        447.89,
+        157.29,
+        558.96,
+        368.72
+      ],
+      "crop_path": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\detector_inference\\example_6\\example_6_det03_Metal.jpg"
+    },
+    {
+      "index": 4,
+      "class_id": 2,
+      "material": "Metal",
+      "bin": "PMD",
+      "confidence": 0.8799,
+      "bbox_xyxy": [
+        360.61,
+        148.47,
+        463.79,
+        371.77
+      ],
+      "crop_path": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\testing_projects\\Yolo-taco_test_v1\\runs\\detector_inference\\example_6\\example_6_det04_Metal.jpg"
+    }
+  ]
+}
