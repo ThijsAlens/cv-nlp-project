@@ -26,9 +26,16 @@ from trash_detector.detector import GarbageDetector
 # Demo image used by the runner. A single path string keeps the demo simple.
 DEMO_IMAGE = Path("data/Totaal_dataset/inference_tests_visual/example_6.jpg")
 
-# Output folder for the saved JSON file and crop previews. Set to 'None' to
-# use the detector default ('runs/detector_inference/<image_stem>/').
-DEFAULT_OUTPUT_DIR: Optional[Path] = None
+# Trained model checkpoint used by the demo. The literal default below mirrors
+# 'MODEL_RELATIVE_PATH' inside 'garbage_detector.py'; change it to point at a
+# different run, or set it to 'None' to fall back to the module default.
+MODEL_PATH: Optional[Path] = Path("runs/train/yolo11s_garbage_5c-2/weights/best.pt")
+
+# Output folder for the saved JSON file and crop previews. The literal default
+# below mirrors what the module would auto-create for 'example_6.jpg'; change
+# it freely, or set it to 'None' to let the module pick the folder for you
+# ('runs/detector_inference/<image_stem>/').
+DEFAULT_OUTPUT_DIR: Optional[Path] = Path("runs/detector_inference/example_6")
 
 
 # =============================================================================
@@ -36,24 +43,45 @@ DEFAULT_OUTPUT_DIR: Optional[Path] = None
 # =============================================================================
 
 
-def main(output_dir: Optional[Path] = DEFAULT_OUTPUT_DIR) -> None:
-    """Run the demo. Pass 'output_dir' to override where outputs are saved."""
+def _anchor_at_repo_root(path: Optional[Path], repo_root: Path) -> Optional[Path]:
+    """Anchor a relative path at the script's repo root.
+
+    Absolute paths and 'None' are passed through unchanged so callers can mix
+    relative defaults (easy to read) with absolute overrides (easy to script).
+    """
+    if path is None:
+        return None
+    return path if path.is_absolute() else repo_root / path
+
+
+def main(
+    output_dir: Optional[Path] = DEFAULT_OUTPUT_DIR,
+    model_path: Optional[Path] = MODEL_PATH,
+) -> None:
+    """Run the demo.
+
+    Pass 'output_dir' to override where outputs are saved, or 'model_path' to
+    swap in a different trained checkpoint without editing the module.
+    """
     # -------------------------------------------------------------------------
-    # Step 1: resolve the demo image to an absolute path so the script also
-    #          works when launched from a different working directory.
+    # Step 1: resolve every configured path against the script location so the
+    #          script works no matter the current working directory.
     # -------------------------------------------------------------------------
     repo_root = Path(__file__).resolve().parent
-    # If 'DEMO_IMAGE' is relative, anchor it at the repo root.
-    demo_image = DEMO_IMAGE if DEMO_IMAGE.is_absolute() else repo_root / DEMO_IMAGE
-    if not demo_image.is_file():
+    demo_image = _anchor_at_repo_root(DEMO_IMAGE, repo_root)
+    resolved_weights = _anchor_at_repo_root(model_path, repo_root)
+    resolved_output_dir = _anchor_at_repo_root(output_dir, repo_root)
+
+    # The demo image must exist; weights and output dir are validated downstream.
+    if demo_image is None or not demo_image.is_file():
         raise SystemExit(f"Demo image not found at: {demo_image}")
 
     # -------------------------------------------------------------------------
-    # Step 2: build the detector. Defaults already point at the latest
-    #          checkpoint and the bin mapping JSON, so no extra arguments
-    #          are required.
+    # Step 2: build the detector. Passing 'weights_path=None' lets the module
+    #          pick its own default checkpoint; passing a real path overrides
+    #          it without touching 'garbage_detector.py'.
     # -------------------------------------------------------------------------
-    detector = GarbageDetector()
+    detector = GarbageDetector(weights_path=resolved_weights)
     print(f"Loaded model weights: {detector.weights_path}")
     print(f"Known classes:        {detector.class_names}")
 
@@ -61,7 +89,7 @@ def main(output_dir: Optional[Path] = DEFAULT_OUTPUT_DIR) -> None:
     # Step 3: run detection. Crops and the JSON file are saved by default.
     #          Forwarding 'output_dir' lets callers redirect the saved files.
     # -------------------------------------------------------------------------
-    result = detector.detect(demo_image, output_dir=output_dir)
+    result = detector.detect(demo_image, output_dir=resolved_output_dir)
 
     # -------------------------------------------------------------------------
     # Step 4: print a short summary, then the full JSON payload.

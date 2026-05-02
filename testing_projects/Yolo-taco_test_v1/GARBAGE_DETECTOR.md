@@ -26,6 +26,26 @@ By default the model is loaded from
 from `data/bin_mapping.json`. Crops and a JSON summary are written under
 `runs/detector_inference/<image_stem>/`.
 
+## Configuration paths
+
+The module exposes path defaults in a clearly marked block at the top of
+[`src/trash_detector/detector/garbage_detector.py`](src/trash_detector/detector/garbage_detector.py).
+Edit them once to switch the model or the bin mapping for every caller, or
+override per call via constructor arguments.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `MODEL_RELATIVE_PATH` | `runs/train/yolo11s_garbage_5c-2/weights/best.pt` | Trained YOLO checkpoint loaded by `GarbageDetector()`. |
+| `DEFAULT_WEIGHTS_PATH` | derived from `MODEL_RELATIVE_PATH` | Absolute path passed to YOLO; rebuilt from the relative string above. |
+| `DEFAULT_BIN_MAPPING_PATH` | `data/bin_mapping.json` | Material-to-bin JSON used to label detections. |
+| `DEFAULT_OUTPUT_ROOT` | `runs/detector_inference` | Folder where each image's crops and JSON are written. |
+
+The demo runner [`garbage_detector_demo.py`](garbage_detector_demo.py)
+exposes its own configuration block at the top with `DEMO_IMAGE`,
+`MODEL_PATH`, and `DEFAULT_OUTPUT_DIR`. `MODEL_PATH=None` falls back to
+`MODEL_RELATIVE_PATH` from the module; setting it to a `Path` swaps the
+checkpoint just for the demo without editing the module.
+
 ## Where it lives
 
 | Path | Purpose |

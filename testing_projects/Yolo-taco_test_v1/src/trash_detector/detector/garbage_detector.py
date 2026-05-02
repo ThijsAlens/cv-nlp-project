@@ -42,7 +42,7 @@ ImageInput = Union[str, Path, np.ndarray]
 
 
 # =============================================================================
-# Default project locations
+# Configuration (edit these defaults to change which model is used)
 # =============================================================================
 
 # This file lives at:
@@ -50,10 +50,10 @@ ImageInput = Union[str, Path, np.ndarray]
 # So the repository root is three parent folders up.
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 
-# Default trained model: the latest 5-class garbage YOLO11s run.
-DEFAULT_WEIGHTS_PATH = (
-    _REPO_ROOT / "runs" / "train" / "yolo11s_garbage_5c-2" / "weights" / "best.pt"
-)
+# Trained model used when no 'weights_path' is passed to 'GarbageDetector'.
+# Change this string to point at a different run, then rebuild the path.
+MODEL_RELATIVE_PATH = "runs/train/yolo11s_garbage_5c-2/weights/best.pt"
+DEFAULT_WEIGHTS_PATH = _REPO_ROOT / MODEL_RELATIVE_PATH
 
 # Default bin mapping JSON shipped with the dataset.
 DEFAULT_BIN_MAPPING_PATH = _REPO_ROOT / "data" / "bin_mapping.json"
