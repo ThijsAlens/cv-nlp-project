@@ -5,6 +5,7 @@ Now includes RAG system for Belgian waste disposal laws (Cross-Lingual).
 import sys
 import json
 import ollama
+import cv2
 from pathlib import Path
 
 _BASE = Path(__file__).resolve().parent
@@ -49,8 +50,8 @@ def _get_detector() -> GarbageDetector:
 
 
 def _run_vision_detection() -> None:
-    """Run GarbageDetector on Image_for_pipeline/image.jpg and write the detected
-    material names to NLP-Part_PHI/input.json so run_pipeline() can read them."""
+    """Run GarbageDetector on Image_for_pipeline/image.jpg, write detected material
+    names to nlp/input.json, and save an annotated image with bounding boxes."""
     if not _IMAGE_FOR_PIPELINE.is_file():
         print(f"[detect] Image not found: {_IMAGE_FOR_PIPELINE}")
         return
@@ -70,6 +71,17 @@ def _run_vision_detection() -> None:
                 objects.append(det.material)
                 seen.add(det.material)
         print(f"[detect] Detected: {objects}")
+
+        # Draw bounding boxes on a copy of the original image and save it
+        img = cv2.imread(str(_IMAGE_FOR_PIPELINE))
+        for det in result.detections:
+            x1, y1, x2, y2 = [int(v) for v in det.bbox_xyxy]
+            cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
+            label = f"{det.material} {det.confidence:.0%}"
+            cv2.putText(img, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2)
+        out_path = _IMAGE_FOR_PIPELINE.parent / "image_detected.jpg"
+        cv2.imwrite(str(out_path), img)
+        print(f"[detect] Annotated image saved to: {out_path}")
 
     with open(_INPUT_JSON_PATH, "w", encoding="utf-8") as f:
         json.dump({"Objects": objects}, f, indent=2)
@@ -112,11 +124,11 @@ def run_pipeline(input_path: str, model: str = "qwen2.5:3b") -> str:
     prompt = f"""
 You are a helpful waste assistant in Flanders, Belgium. Your goal is to give a short, natural, and human-sounding instruction.
 
-For this you will need the items:
+For this you will need the items/material:
 {chr(10).join(disposal_info)}
 
 RULES:
-1. Start directly by mentioning the items.
+1. Start directly by mentioning the items/material.
 2. Tell the user exactly where they go based on the context.
 3. Use a maximum of 2 sentences.
 4. Don't change the name of the bins!
