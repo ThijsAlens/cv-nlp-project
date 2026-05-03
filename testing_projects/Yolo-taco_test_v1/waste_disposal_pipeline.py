@@ -2,24 +2,77 @@
 Waste Disposal Pipeline - Generates disposal instructions from YOLO detections using Ollama.
 Now includes RAG system for Belgian waste disposal laws (Cross-Lingual).
 """
+import sys
 import json
 import ollama
-from rag_system import RAGSystem
+from pathlib import Path
 
-# Sorting rules: object -> disposal bin
-    # "Glass bottle": "Glass container",
-    # "Glass jar": "Glass container",
-    # "Plastic bottle": "PMD",
-    # "Plastic cap": "PMD",
-    # "Aluminum can": "PMD",
-    # "Drink carton": "PMD",
-    # "Cardboard box": "Paper & Cardboard",
-    # "Newspaper": "Paper & Cardboard",
-    # "Food scraps": "Organic waste",
-    # "Styrofoam": "Residual waste",
+_BASE = Path(__file__).resolve().parent
+
+# trash_detector lives in src/ — add it to the path so it's importable
+# without needing to pip-install the package separately.
+_SRC = _BASE / "src"
+if str(_SRC) not in sys.path:
+    sys.path.insert(0, str(_SRC))
+
+from nlp.rag_system import RAGSystem
+from trash_detector.detector.garbage_detector import GarbageDetector
+_IMAGE_FOR_PIPELINE = _BASE / "Image_for_pipeline" / "image.jpg"
+_INPUT_JSON_PATH    = _BASE / "nlp" / "input.json"
+
+# ---------------------------------------------------------------------------
+# Sorting rules: maps model output material names to household bin labels.
+# The vision model detects exactly these 5 classes (from data/bin_mapping.json):
+# ---------------------------------------------------------------------------
 SORTING_RULES = {
-
+    "Cardboard": "Paper",
+    "Glass":     "Rest",
+    "Metal":     "PMD",
+    "Paper":     "Paper",
+    "Plastic":   "PMD",
 }
+
+# ---------------------------------------------------------------------------
+# Lazy-loaded vision detector (model load is expensive, done once on first use)
+# ---------------------------------------------------------------------------
+_detector: GarbageDetector | None = None
+
+
+def _get_detector() -> GarbageDetector:
+    """Return the shared GarbageDetector instance, loading it on first call."""
+    global _detector
+    if _detector is None:
+        print("Loading vision model...")
+        _detector = GarbageDetector()
+        print(f"Vision model loaded: {_detector.weights_path.name}")
+    return _detector
+
+
+def _run_vision_detection() -> None:
+    """Run GarbageDetector on Image_for_pipeline/image.jpg and write the detected
+    material names to NLP-Part_PHI/input.json so run_pipeline() can read them."""
+    if not _IMAGE_FOR_PIPELINE.is_file():
+        print(f"[detect] Image not found: {_IMAGE_FOR_PIPELINE}")
+        return
+
+    detector = _get_detector()
+    result = detector.detect(_IMAGE_FOR_PIPELINE, save_crops=False, save_json=False)
+
+    if not result.detections:
+        print(f"[detect] No objects detected in '{_IMAGE_FOR_PIPELINE.name}'.")
+        objects = []
+    else:
+        # Deduplicate while preserving order (same material can appear multiple times)
+        seen: set[str] = set()
+        objects = []
+        for det in result.detections:
+            if det.material not in seen:
+                objects.append(det.material)
+                seen.add(det.material)
+        print(f"[detect] Detected: {objects}")
+
+    with open(_INPUT_JSON_PATH, "w", encoding="utf-8") as f:
+        json.dump({"Objects": objects}, f, indent=2)
 
 # Initialize RAG system globally
 rag = RAGSystem()
@@ -146,7 +199,8 @@ def chatbot_loop(model: str = "qwen2.5:3b"):
             break
         
         if user_input.lower() == "detect":
-            bot_response = run_pipeline("input.json", model=model)
+            _run_vision_detection()
+            bot_response = run_pipeline(str(_INPUT_JSON_PATH), model=model)
             print("\nBot:", bot_response)
             
             # Sla YOLO detectie en bot response op in het geheugen
@@ -164,11 +218,9 @@ def chatbot_loop(model: str = "qwen2.5:3b"):
         print()
 
 if __name__ == "__main__":
-    import sys
-    
     if len(sys.argv) > 1 and sys.argv[1] == "--detect":
         # Original behavior: process input.json
-        instruction = run_pipeline("input.json")
+        instruction = run_pipeline(str(_INPUT_JSON_PATH))
         print(f"\n DISPOSAL INSTRUCTION:\n{instruction}")
     else:
         # New behavior: interactive chatbot
