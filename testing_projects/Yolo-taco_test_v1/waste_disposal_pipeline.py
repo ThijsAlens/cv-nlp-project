@@ -7,17 +7,18 @@ import ollama
 from rag_system import RAGSystem
 
 # Sorting rules: object -> disposal bin
+    # "Glass bottle": "Glass container",
+    # "Glass jar": "Glass container",
+    # "Plastic bottle": "PMD",
+    # "Plastic cap": "PMD",
+    # "Aluminum can": "PMD",
+    # "Drink carton": "PMD",
+    # "Cardboard box": "Paper & Cardboard",
+    # "Newspaper": "Paper & Cardboard",
+    # "Food scraps": "Organic waste",
+    # "Styrofoam": "Residual waste",
 SORTING_RULES = {
-    "Glass bottle": "Glass container",
-    "Glass jar": "Glass container",
-    "Plastic bottle": "PMD",
-    "Plastic cap": "PMD",
-    "Aluminum can": "PMD",
-    "Drink carton": "PMD",
-    "Cardboard box": "Paper & Cardboard",
-    "Newspaper": "Paper & Cardboard",
-    "Food scraps": "Organic waste",
-    "Styrofoam": "Residual waste",
+
 }
 
 # Initialize RAG system globally
