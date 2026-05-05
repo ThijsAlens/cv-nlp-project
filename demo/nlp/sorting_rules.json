@@ -1,0 +1,7 @@
+{
+    "Cardboard": "Paper",
+    "Glass":     "Rest",
+    "Metal":     "PMD",
+    "Paper":     "Paper",
+    "Plastic":   "PMD"
+}
