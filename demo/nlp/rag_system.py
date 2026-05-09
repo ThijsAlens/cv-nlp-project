@@ -20,7 +20,8 @@ except ImportError:
     HAS_PYPDF = False
 
 # Paths
-DOCUMENTS_DIR = Path(__file__).parent / "documents"
+GENERAL_DOCS_DIR = Path(__file__).parent / "documents" / "general"   # FAISS: general Belgian material rules
+REGION_DOCS_DIR  = Path(__file__).parent / "documents" / "regions"   # BM25: region/city/country-specific rules
 INDEX_DIR = Path(__file__).parent / "faiss_index"
 INDEX_FILE = INDEX_DIR / "index.faiss"
 CHUNKS_FILE = INDEX_DIR / "chunks.pkl"
@@ -51,14 +52,14 @@ class RAGSystem:
         self._build_bm25_from_disk()
     
     def load_documents(self) -> list[tuple[str, str]]:
-        """Load all documents from the documents folder as (filename, text) pairs."""
-        if not DOCUMENTS_DIR.exists():
-            print(f"No documents folder found at {DOCUMENTS_DIR}")
+        """Load general documents (for FAISS) from documents/general/."""
+        if not GENERAL_DOCS_DIR.exists():
+            print(f"No general documents folder found at {GENERAL_DOCS_DIR}")
             return []
         
         all_docs = []
         
-        for file_path in sorted(DOCUMENTS_DIR.iterdir()):
+        for file_path in sorted(GENERAL_DOCS_DIR.iterdir()):
             if file_path.suffix.lower() == ".txt":
                 text = file_path.read_text(encoding="utf-8", errors="ignore")
                 all_docs.append((file_path.name, text))
@@ -108,12 +109,11 @@ class RAGSystem:
         return True
     
     def _build_bm25_from_disk(self):
-        """Build BM25 index by reading all documents directly from disk.
-        This is always fresh — independent of whether the FAISS index is up to date."""
-        if not DOCUMENTS_DIR.exists():
+        """Build BM25 index from documents/regions/ — always fresh from disk."""
+        if not REGION_DOCS_DIR.exists():
             return
         docs = []
-        for file_path in sorted(DOCUMENTS_DIR.iterdir()):
+        for file_path in sorted(REGION_DOCS_DIR.iterdir()):
             if file_path.suffix.lower() == ".txt":
                 text = file_path.read_text(encoding="utf-8", errors="ignore").strip()
                 if text:

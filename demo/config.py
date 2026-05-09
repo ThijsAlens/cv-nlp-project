@@ -28,7 +28,7 @@ SYSTEM_PROMPT_PATH = "nlp/system_prompt.txt"       # Path to the system prompt t
 # OTHER CONFIGURATION VARIABLES
 # ---------------------------------------------------------------------------
 IS_RUNNING = False                                  # Flag to control the main loop and threads
-DEBUG = True                                        # Flag to enable debug output (prints retrieved chunks + full prompt)
+DEBUG = False                                        # Flag to enable debug output (prints retrieved chunks + full prompt)
 
 from pathlib import Path
 TEMP_DIR = Path("temp")                             # Temporary directory for intermediate files (e.g., captured webcam frames)
