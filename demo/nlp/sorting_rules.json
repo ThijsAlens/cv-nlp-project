@@ -1,7 +1,7 @@
 {
-    "Cardboard": "Paper",
-    "Glass":     "Rest",
-    "Metal":     "PMD",
-    "Paper":     "Paper",
-    "Plastic":   "PMD"
+    "cardboard": "paper",
+    "glass":     "glass container",
+    "metal":     "pmd",
+    "paper":     "paper",
+    "plastic":   "pmd"
 }

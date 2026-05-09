@@ -17,7 +17,7 @@ VISION_MODEL = YOLO(VISION_MODEL_PATH)              # Initialize the YOLO model 
 from nlp.rag_system import RAGSystem
 RAG = RAGSystem()                                   # Initialize the RAG system globally
 
-NLP_MODEL_NAME = "qwen2.5:3b"                       # Default NLP model to use for the chatbot
+NLP_MODEL_NAME = "granite4.1:3b"                       # Default NLP model to use for the chatbot
 
 SORTING_RULES_PATH = "nlp/sorting_rules.json"       # Path to the JSON file containing sorting rules for different materials
 
