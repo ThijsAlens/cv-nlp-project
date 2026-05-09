@@ -27,9 +27,13 @@ def _extract_location(query: str) -> str | None:
     """Use the LLM to extract a city or country name from the user query.
     Returns the name as a string, or None if no location was found."""
     prompt = (
-        "Extract the city or country name from the sentence below. "
-        "Reply with ONLY the name (one or two words). "
-        "If there is no city or country mentioned, reply with exactly: none\n\n"
+        "Extract the most specific location name (city, municipality, or intercommunale) from the sentence below.\n"
+        "Rules:\n"
+        "- Reply with ONLY the name (one or two words).\n"
+        "- Always prefer a city or municipality over a country name. "
+        "For example, if 'Gent' is mentioned, reply 'Gent', not 'Belgium'.\n"
+        "- Only return a country name if NO city or municipality is mentioned at all.\n"
+        "- If no location is mentioned whatsoever, reply with exactly: none\n\n"
         f"Sentence: {query}"
     )
     response = ollama.chat(
