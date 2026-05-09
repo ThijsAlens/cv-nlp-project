@@ -4,10 +4,12 @@ Uses FAISS for vector storage and sentence-transformers for embeddings.
 """
 import os
 import pickle
+import re
 from pathlib import Path
 
 import faiss
 import numpy as np
+from rank_bm25 import BM25Okapi
 from sentence_transformers import SentenceTransformer
 
 # Try to import pypdf, fall back gracefully
@@ -27,15 +29,26 @@ CHUNKS_FILE = INDEX_DIR / "chunks.pkl"
 EMBEDDING_MODEL = "all-MiniLM-L6-v2" # for multilingual support, consider "paraphrase-multilingual-MiniLM-L12-v2"
 
 
+def _tokenize(text: str) -> list[str]:
+    """Lowercase and extract word tokens, stripping all punctuation."""
+    return re.findall(r"[\w]+", text.lower())
+
+
 class RAGSystem:
     def __init__(self):
         self.model = SentenceTransformer(EMBEDDING_MODEL)
         self.index = None
         self.chunks = []
+        self._bm25: BM25Okapi | None = None
+        self._bm25_docs: list[str] = []  # one entry per document file, always fresh from disk
         
-        # Load existing index if available
+        # Load existing FAISS index if available
         if INDEX_FILE.exists() and CHUNKS_FILE.exists():
             self.load_index()
+        
+        # BM25 is always built fresh from disk so it includes any new files
+        # even if the FAISS index has not been rebuilt yet
+        self._build_bm25_from_disk()
     
     def load_documents(self) -> list[tuple[str, str]]:
         """Load all documents from the documents folder as (filename, text) pairs."""
@@ -94,6 +107,26 @@ class RAGSystem:
         print(f"Index saved to {INDEX_DIR}")
         return True
     
+    def _build_bm25_from_disk(self):
+        """Build BM25 index by reading all documents directly from disk.
+        This is always fresh — independent of whether the FAISS index is up to date."""
+        if not DOCUMENTS_DIR.exists():
+            return
+        docs = []
+        for file_path in sorted(DOCUMENTS_DIR.iterdir()):
+            if file_path.suffix.lower() == ".txt":
+                text = file_path.read_text(encoding="utf-8", errors="ignore").strip()
+                if text:
+                    docs.append(text)
+            elif file_path.suffix.lower() == ".pdf" and HAS_PYPDF:
+                reader = PdfReader(file_path)
+                text = "\n".join(page.extract_text() or "" for page in reader.pages).strip()
+                if text:
+                    docs.append(text)
+        self._bm25_docs = docs
+        tokenized = [_tokenize(doc) for doc in docs]
+        self._bm25 = BM25Okapi(tokenized)
+
     def load_index(self):
         """Load existing FAISS index."""
         self.index = faiss.read_index(str(INDEX_FILE))
@@ -117,6 +150,20 @@ class RAGSystem:
         results = [self.chunks[i] for i in indices[0] if i < len(self.chunks)]
         return results
     
+    def bm25_retrieve(self, location: str, top_k: int = 1) -> list[str]:
+        """Return the top_k documents that best match the location name via BM25.
+        Only returns chunks that actually score > 0 (i.e. contain the keyword)."""
+        if self._bm25 is None or not self._bm25_docs:
+            return []
+        tokens = _tokenize(location)
+        scores = self._bm25.get_scores(tokens)
+        ranked = sorted(enumerate(scores), key=lambda x: x[1], reverse=True)
+        return [
+            self._bm25_docs[i]
+            for i, score in ranked[:top_k]
+            if score > 0
+        ]
+
     def has_index(self) -> bool:
         """Check if an index is loaded."""
         return self.index is not None and len(self.chunks) > 0
