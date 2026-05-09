@@ -25,8 +25,6 @@ CHUNKS_FILE = INDEX_DIR / "chunks.pkl"
 
 # Embedding model (small, fast, good quality)
 EMBEDDING_MODEL = "all-MiniLM-L6-v2" # for multilingual support, consider "paraphrase-multilingual-MiniLM-L12-v2"
-CHUNK_SIZE = 500  # characters per chunk
-CHUNK_OVERLAP = 50
 
 
 class RAGSystem:
@@ -39,51 +37,37 @@ class RAGSystem:
         if INDEX_FILE.exists() and CHUNKS_FILE.exists():
             self.load_index()
     
-    def load_documents(self) -> list[str]:
-        """Load all documents from the documents folder."""
+    def load_documents(self) -> list[tuple[str, str]]:
+        """Load all documents from the documents folder as (filename, text) pairs."""
         if not DOCUMENTS_DIR.exists():
             print(f"No documents folder found at {DOCUMENTS_DIR}")
             return []
         
-        all_text = []
+        all_docs = []
         
-        for file_path in DOCUMENTS_DIR.iterdir():
+        for file_path in sorted(DOCUMENTS_DIR.iterdir()):
             if file_path.suffix.lower() == ".txt":
                 text = file_path.read_text(encoding="utf-8", errors="ignore")
-                all_text.append(text)
+                all_docs.append((file_path.name, text))
                 print(f"Loaded: {file_path.name}")
                 
             elif file_path.suffix.lower() == ".pdf" and HAS_PYPDF:
                 reader = PdfReader(file_path)
                 text = "\n".join(page.extract_text() or "" for page in reader.pages)
-                all_text.append(text)
+                all_docs.append((file_path.name, text))
                 print(f"Loaded: {file_path.name}")
         
-        return all_text
-    
-    def chunk_text(self, text: str) -> list[str]:
-        """Split text into overlapping chunks."""
-        chunks = []
-        start = 0
-        while start < len(text):
-            end = start + CHUNK_SIZE
-            chunk = text[start:end].strip()
-            if chunk:
-                chunks.append(chunk)
-            start = end - CHUNK_OVERLAP
-        return chunks
+        return all_docs
     
     def build_index(self):
-        """Build FAISS index from documents in the documents folder."""
+        """Build FAISS index from documents — one chunk per file."""
         documents = self.load_documents()
         if not documents:
             print("No documents found to index.")
             return False
         
-        # Chunk all documents
-        self.chunks = []
-        for doc in documents:
-            self.chunks.extend(self.chunk_text(doc))
+        # Each file is one chunk (file-based chunking)
+        self.chunks = [text.strip() for _, text in documents if text.strip()]
         
         if not self.chunks:
             print("No text chunks extracted.")

@@ -1,0 +1,11 @@
+Country: France
+Major Cities: Paris, Marseille, Lyon, Toulouse, Nice
+Waste System Type: Color-coded bins (Poubelles)
+----------------------------------------
+
+General Sorting Rules for France:
+
+- Recyclables (Plastic/Paper/Metal): Yellow bin (Bac Jaune)
+- Glass: White or Green bin / public containers
+- Residual waste: Green or Grey bin
+- Organic (Biodéchets): Mandatory separate collection since January 2024 (brown bin or public compost point)

@@ -1,0 +1,10 @@
+Region/Intercommunale: Intradura
+Cities: Asse, Beersel, Dilbeek, Drogenbos, Gooik, Grimbergen, Halle, Herne, Kapelle-op-den-Bos, Lennik, Linkebeek, Merchtem, Opwijk, Pepingen, Roosdaal, Sint-Pieters-Leeuw, Ternat, Wemmel
+Country: Belgium
+----------------------------------------
+
+Waste Bag Colors:
+
+- Residual waste: Black bag with white prints
+- PMD (Plastic, Metal, Drink cartons): Blue bag
+- Organic waste: Light green bag
