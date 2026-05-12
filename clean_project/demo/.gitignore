@@ -1,0 +1,7 @@
+.cursor/
+.claude/
+CLAUDE.md
+PROGRESS.md
+
+models/
+!models/README.md
