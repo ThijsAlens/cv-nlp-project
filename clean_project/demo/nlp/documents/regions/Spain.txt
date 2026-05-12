@@ -1,0 +1,13 @@
+Country: Spain
+Major Cities: Madrid, Barcelona, Valencia, Seville, Zaragoza
+Waste System Type: Color-coded street containers (Contenedores)
+----------------------------------------
+
+General Sorting Rules for Spain:
+
+- Plastic/Metal/Cartons: Yellow container (Contenedor amarillo)
+- Paper/Cardboard: Blue container (Contenedor azul)
+- Glass: Green container (Iglú verde)
+- Organic: Brown container (Contenedor marrón)
+- Residual waste: Grey container (Contenedor gris)
+

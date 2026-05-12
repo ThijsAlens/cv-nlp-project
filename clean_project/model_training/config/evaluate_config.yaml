@@ -1,0 +1,28 @@
+# ============================================================
+# Evaluation configuration for a trained waste detector checkpoint.
+# Edit 'weights' and 'dataset_yaml' before running.
+# Then run: uv run python scripts/run_evaluate.py
+# ============================================================
+
+# Path to the trained model checkpoint (best.pt from a training run).
+weights: ./runs/train/yolo11s_garbage_v1/weights/best.pt
+
+# Path to the dataset YAML used for evaluation.
+dataset_yaml: ./data/Totaal_dataset/data.yaml
+
+# Which splits to evaluate on.
+splits:
+  - val
+  - test
+
+# Image size used during evaluation (should match training imgsz).
+imgsz: 640
+
+# Batch size for evaluation inference.
+batch: 8
+
+# Device to use: '0' for first GPU, 'cpu' for CPU.
+device: "0"
+
+# Path where the evaluation results JSON will be saved.
+output: ./runs/evaluate/results.json

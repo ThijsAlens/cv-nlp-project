@@ -1,0 +1,10 @@
+Region/Intercommunale: Imog
+Cities: Kortrijk, Harelbeke, Anzegem, Deerlijk, Kuurne, Spiere-Helkijn, Waregem, Wielsbeke, Zwevegem
+Country: Belgium
+----------------------------------------
+
+Waste Bag Colors:
+
+- Residual waste: White bag (in Kortrijk, also option for gray container) (Anzegem, Harelbeke and Wielsbeke only have the gray container)
+- PMD (Plastic, Metal, Drink cartons): Blue bag
+- Organic waste: Brown container

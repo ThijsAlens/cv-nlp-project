@@ -1,0 +1,10 @@
+Region/Intercommunale: MIWA
+Cities: Sint-Niklaas, Stekene, Temse, Waasmunster, Beveren-Waas
+Country: Belgium
+----------------------------------------
+
+Waste Bag Colors:
+
+- Residual waste: Gray container
+- PMD (Plastic, Metal, Drink cartons): Blue bag
+- Organic waste: Green container

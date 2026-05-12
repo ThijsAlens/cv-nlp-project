@@ -1,0 +1,45 @@
+# ============================================================
+# NLP assistant configuration.
+# Edit this file to change the LLM model, document paths, and RAG settings.
+# Then run: uv run python scripts/run_chat.py
+# ============================================================
+
+# --- LLM settings ---
+llm:
+  # Ollama model name. The model must be pulled before running ('ollama pull <name>').
+  model: granite4.1:3b
+
+# --- RAG retrieval settings ---
+rag:
+  # Sentence-transformer model used to embed documents and queries for FAISS.
+  # For better multilingual support, use 'paraphrase-multilingual-MiniLM-L12-v2'.
+  embedding_model: all-MiniLM-L6-v2
+  # Number of general-rule chunks to retrieve from the FAISS index per query.
+  faiss_top_k: 3
+  # Number of region-specific documents to retrieve from BM25 per query.
+  bm25_top_k: 1
+
+# --- File paths (relative to the project root) ---
+paths:
+  # Folder containing general Belgian waste rule documents (used for FAISS).
+  general_docs: ./documents/general
+  # Folder containing region/city-specific rule documents (used for BM25).
+  region_docs: ./documents/regions
+  # Folder where the FAISS index files are saved (auto-created by run_build_index.py).
+  faiss_index: ./faiss_index
+  # JSON file mapping detected material names to disposal bin names.
+  sorting_rules: ./config/sorting_rules.json
+  # LLM prompt template for ongoing chat messages.
+  system_prompt: ./config/system_prompt.txt
+  # LLM prompt template for the initial 'start' conversation turn.
+  start_prompt: ./config/start_conversation.txt
+
+# --- Standalone test input ---
+# Path to a JSON file used when the user types 'start' in the chatbot.
+# The file must contain {"labels": ["Metal", "Glass"]} (a list of detected material names).
+# Leave empty to be prompted interactively instead.
+test_input: ./config/test_input.json
+
+# --- Debug output ---
+# When true, prints retrieved RAG chunks and the extracted location to the console.
+debug: false

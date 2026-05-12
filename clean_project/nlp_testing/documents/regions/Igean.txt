@@ -1,0 +1,10 @@
+Region/Intercommunale: Igean
+Cities: Antwerpen (districten), Aartselaar, Boom, Borsbeek, Brasschaat, Edegem, Hemiksem, Hove, Kalmthout, Kapellen, Kontich, Lint, Mortsel, Niel, Ranst, Schelle, Schoten, Stabroek, Wijnegem, Wommelgem, Wuustwezel, Zandhoven, Zoersel
+Country: Belgium
+----------------------------------------
+
+Waste Bag Colors:
+
+- Residual waste: Gray
+- PMD (Plastic, Metal, Drink cartons): Blue bag
+- Organic waste: Green kliko/container

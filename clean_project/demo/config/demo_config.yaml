@@ -1,0 +1,39 @@
+# ============================================================
+# Smart Waste Sorter demo configuration.
+# Edit this file to change the model, LLM, and paths.
+# Then run: uv run python demo.py
+# ============================================================
+
+# --- Vision model ---
+vision:
+  # Name of the model bundle folder inside 'models/'.
+  # The folder must contain a 'weights/best.pt' file.
+  # Example: if the bundle is at 'models/yolov8n_garbage_v1/', set this to 'yolov8n_garbage_v1'.
+  model_bundle: yolov8n_garbage_v1
+
+# --- NLP / chatbot ---
+nlp:
+  # Ollama model name. The model must be pulled before running: 'ollama pull <name>'.
+  model: granite4.1:3b
+  # Sentence-transformer model used to embed documents and queries for FAISS.
+  embedding_model: all-MiniLM-L6-v2
+  # Number of general-rule chunks returned by FAISS per query.
+  faiss_top_k: 3
+  # Number of region-specific documents returned by BM25 per query.
+  bm25_top_k: 1
+  # Print retrieved RAG chunks and the extracted location to the console.
+  debug: false
+
+# --- File paths (relative to the project root) ---
+paths:
+  # Shared directory for temporary files written by the vision thread
+  # and read by the NLP thread (input.png, output.png, results.json).
+  temp_dir: ./temp
+  # NLP document directories.
+  general_docs: ./nlp/documents/general
+  region_docs: ./nlp/documents/regions
+  faiss_index: ./nlp/faiss_index
+  # NLP data files.
+  sorting_rules: ./nlp/sorting_rules.json
+  system_prompt: ./nlp/system_prompt.txt
+  start_prompt: ./nlp/start_conversation.txt

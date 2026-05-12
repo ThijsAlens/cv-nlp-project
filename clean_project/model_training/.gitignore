@@ -1,0 +1,13 @@
+data/
+.venv/
+__pycache__/
+
+
+PROGRESS.md
+CLAUDE.md
+
+.pt
+
+runs/train/*
+!runs/train/latest/
+!runs/train/latest/**
