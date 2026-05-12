@@ -17,7 +17,7 @@ VISION_MODEL = YOLO(VISION_MODEL_PATH)              # Initialize the YOLO model 
 from nlp.rag_system import RAGSystem
 RAG = RAGSystem()                                   # Initialize the RAG system globally
 
-NLP_MODEL_NAME = "qwen2.5:3b"                       # Default NLP model to use for the chatbot
+NLP_MODEL_NAME = "granite4.1:3b"                       # Default NLP model to use for the chatbot
 
 SORTING_RULES_PATH = "nlp/sorting_rules.json"       # Path to the JSON file containing sorting rules for different materials
 
@@ -28,6 +28,7 @@ SYSTEM_PROMPT_PATH = "nlp/system_prompt.txt"       # Path to the system prompt t
 # OTHER CONFIGURATION VARIABLES
 # ---------------------------------------------------------------------------
 IS_RUNNING = False                                  # Flag to control the main loop and threads
+DEBUG = False                                        # Flag to enable debug output (prints retrieved chunks + full prompt)
 
 from pathlib import Path
 TEMP_DIR = Path("temp")                             # Temporary directory for intermediate files (e.g., captured webcam frames)

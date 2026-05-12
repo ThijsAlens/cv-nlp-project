@@ -1,0 +1,10 @@
+Region/Intercommunale: EcoWerf
+Cities: Leuven, Aarschot, Begijnendijk, Bekkevoort, Bertem, Bierbeek, Boortmeerbeek, Boutersem, Geetbets, Haacht, Herent, Hoegaarden, Holsbeek, Huldenberg, Keerbergen, Kortenaken, Kortenberg, Landen, Lubbeek, Oud-Heverlee, Rotselaar, Scherpenheuvel-Zichem, Tielt-Winge, Tienen, Tremelo, Zoutleeuw
+Country: Belgium
+----------------------------------------
+
+Waste Bag Colors:
+
+- Residual waste: Brown bag in Leuven (inside and outside the ring), Gray container in all other cities in EcoWerf
+- PMD (Plastic, Metal, Drink cartons): Blue bag
+- Organic waste: Lightgreen bag in city centre Leuven (inside the ring), otherwise green container 

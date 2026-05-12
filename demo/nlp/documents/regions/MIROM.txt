@@ -1,0 +1,10 @@
+Region/Intercommunale: MIROM
+Cities: Roeselare, Kortemark, Hooglede, Lichtervelde, Moorslede, Staden, Torhout, Wingene
+Country: Belgium
+----------------------------------------
+
+Waste Bag Colors:
+
+- Residual waste: White bag
+- PMD (Plastic, Metal, Drink cartons): Blue bag
+- Organic waste: Green/Brown container

@@ -1,0 +1,10 @@
+Region/Intercommunale: IVBO
+Cities: Brugge, Beernem, Blankenberge, Damme, De Haan, Jabbeke, Knokke-Heist, Oostkamp, Zedelgem, Zuienkerke
+Country: Belgium
+----------------------------------------
+
+Waste Bag Colors:
+
+- Residual waste: Green bag (before June 1, 2026, this was yellow)
+- PMD (Plastic, Metal, Drink cartons): Blue bag
+- Organic waste: mandatory green GFT bin in Brugge; other cities choice between green bag or green container

@@ -27,7 +27,7 @@ _INPUT_JSON_PATH    = _BASE / "nlp" / "input.json"
 # ---------------------------------------------------------------------------
 SORTING_RULES = {
     "Cardboard": "Paper",
-    "Glass":     "Rest",
+    "Glass":     "Glass container",
     "Metal":     "PMD",
     "Paper":     "Paper",
     "Plastic":   "PMD",
@@ -107,7 +107,7 @@ def get_rag_context(query: str) -> str:
     return "\n\n".join(chunks)
 
 
-def run_pipeline(input_path: str, model: str = "qwen2.5:3b") -> str:
+def run_pipeline(input_path: str, model: str = "granite4.1:3b") -> str:
     """Load YOLO output, map to bins, and generate disposal instruction."""
     
     with open(input_path, "r") as f:
@@ -147,7 +147,7 @@ CURRENT INPUT TO PROCESS:
     response = ollama.chat(model=model, messages=[{"role": "user", "content": prompt}])
     return response["message"]["content"].strip()
 
-def chat(user_message: str, chat_history: list, model: str = "qwen2.5:3b") -> str: # NIEUW: chat_history toegevoegd
+def chat(user_message: str, chat_history: list, model: str = "granite4.1:3b") -> str: # NIEUW: chat_history toegevoegd
     """Answer a user question about waste disposal using RAG context."""
     
     # NIEUW: Slim zoeken. Als de vraag kort is (bijv. "why?"), plakken we het vorige antwoord erbij voor FAISS.
@@ -162,11 +162,13 @@ def chat(user_message: str, chat_history: list, model: str = "qwen2.5:3b") -> st
     system_prompt = f"""
 You are an expert waste disposal assistant for Flanders, Belgium. 
 Read the context below and answer the user's question based ONLY on this context. Do not invent acronyms or rules.
-Answer the questions in the 'you' form, for example "You should put the glass bottle in the glass container".
+Answer the questions in the 'you' form where needed, for example "You should put the glass bottle in the glass container".
+Answer the questions in 'I' form only when talking about yourself.
 
 CRITICAL INSTRUCTIONS BEFORE YOU ANSWER:
 1. Keep it to 1-3 sentences and be direct. Do NOT invent information.
 2. If you have a handy tip that is directly relevant to the items, you can add it as a final sentence, but only if it is directly relevant to the items. For example, if there is a glass bottle, you can add "Make sure to rinse the glass bottle before recycling!" But if there is only paper, do NOT add a tip about rinsing.
+3. Don't answer to questions not related to waste disposal. Tell the user you are a waste disposal assistance and can only answer questions related to waste disposal.
 
 RELEVANT CONTEXT:
 {rag_context if rag_context else "Note: No documents loaded, tell the user that the AI system is broken"}
@@ -181,7 +183,7 @@ RELEVANT CONTEXT:
     return response["message"]["content"].strip()
 
 
-def chatbot_loop(model: str = "qwen2.5:3b"):
+def chatbot_loop(model: str = "granite4.1:3b"):
     """Interactive chatbot loop for asking waste disposal questions."""
     print("\n  Belgian Waste Disposal Chatbot")
     print("=" * 40)

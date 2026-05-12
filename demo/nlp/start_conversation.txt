@@ -13,6 +13,6 @@ RULES:
 STRICT RULE: Do NOT add extra advice or warnings. Only talk about the detected items. 
 If an item is PMD, call it PMD. Do NOT mention paper unless there is paper.
 
-6. If you have a handy tip that is directly relevant to the items, you can add it as a final third sentence, but only if it is directly relevant to the items. For example, if there is a glass bottle, you can add "Make sure to rinse the glass bottle before recycling!" But if there is only paper, do NOT add a tip about rinsing. Followin context can be used for this, context only used for generating the tips!
+6. If you have a handy tip, it MUST come directly from the context below. Only include it if it is directly relevant to the detected items.
 {rag_context}
 CURRENT INPUT TO PROCESS:

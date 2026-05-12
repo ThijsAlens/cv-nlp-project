@@ -1,0 +1,10 @@
+Region/Intercommunale: IVM
+Cities: Aalter, Assenede, Deinze, Eeklo, Evergem, Gavere, Kaprijke, Lievegem, Maldegem, Sint-Laureins, Zulte
+Country: Belgium
+----------------------------------------
+
+Waste Bag Colors:
+
+- Residual waste: White bag
+- PMD (Plastic, Metal, Drink cartons): Blue bag
+- Organic waste: Green container
