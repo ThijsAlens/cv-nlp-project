@@ -31,7 +31,7 @@ CHUNK_OVERLAP = 50
 
 class RAGSystem:
     def __init__(self):
-        self.model = SentenceTransformer(EMBEDDING_MODEL)
+        self.model = SentenceTransformer(EMBEDDING_MODEL, token=os.environ.get("HF_TOKEN"))
         self.index = None
         self.chunks = []
         

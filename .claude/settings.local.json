@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\phill\\\\Documents\\\\School\\\\MaNaMa\\\\9_Computer Vision and NLP\\\\Project\\\\testing_projects\\\\GitHub\\\\cv-nlp-project\" -Force | Select-Object Name, @{Name='Type'; Expression={if\\($_.PSIsContainer\\){'DIR'}else{'FILE'}}} | Format-Table -AutoSize)",
+      "PowerShell(Get-ChildItem *)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\phill\\\\Documents\\\\School\\\\MaNaMa\\\\9_Computer Vision and NLP\\\\Project\\\\testing_projects\\\\GitHub\\\\cv-nlp-project\" -File | ForEach-Object { $_.Name })"
+    ]
+  }
+}
