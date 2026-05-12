@@ -29,3 +29,6 @@ dependencies = [
     # PyTorch is required by ultralytics and sentence-transformers.
     "torch>=2.0",
 ]
+
+[tool.setuptools.packages.find]
+include = ["nlp*", "vision*"]

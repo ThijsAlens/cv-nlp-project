@@ -9,7 +9,7 @@ vision:
   # Name of the model bundle folder inside 'models/'.
   # The folder must contain a 'weights/best.pt' file.
   # Example: if the bundle is at 'models/yolov8n_garbage_v1/', set this to 'yolov8n_garbage_v1'.
-  model_bundle: yolov8n_garbage_v1
+  model_bundle: yolov8n_garbage_v1-3
 
 # --- NLP / chatbot ---
 nlp:
