@@ -1,0 +1,9 @@
+{
+  "run_name": "yolov8n_garbage_v2-1",
+  "model_weights": "yolov8n.pt",
+  "data_yaml": "/home/phill/Documents/School/9_Computer Vision and NLP/Project/GitHub/clean_project/model_training/data/Totaal_dataset/dataset.ultralytics.yaml",
+  "epochs": 100,
+  "save_dir": "/home/phill/Documents/School/9_Computer Vision and NLP/Project/GitHub/clean_project/model_training/runs/train/yolov8n_garbage_v2-1-4",
+  "best_weights": "/home/phill/Documents/School/9_Computer Vision and NLP/Project/GitHub/clean_project/model_training/runs/train/yolov8n_garbage_v2-1-4/weights/best.pt",
+  "balanced_training": true
+}

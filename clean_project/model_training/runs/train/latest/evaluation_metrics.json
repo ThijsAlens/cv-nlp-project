@@ -1,0 +1,99 @@
+{
+  "weights": "/home/phill/Documents/School/9_Computer Vision and NLP/Project/GitHub/clean_project/model_training/runs/train/yolov8n_garbage_v2-1-4/weights/best.pt",
+  "data_yaml": "/home/phill/Documents/School/9_Computer Vision and NLP/Project/GitHub/clean_project/model_training/data/Totaal_dataset/dataset.ultralytics.yaml",
+  "imgsz": 640,
+  "batch": 8,
+  "device": "0",
+  "results": {
+    "val": {
+      "split": "val",
+      "num_classes": 5,
+      "metrics": {
+        "precision": 0.8928093177293931,
+        "recall": 0.7582580159537107,
+        "f1": 0.8179384119649308,
+        "map50": 0.8661332544231485,
+        "map75": 0.7947292160445899,
+        "map50_95": 0.7122298281919082
+      },
+      "per_class": [
+        {
+          "class_id": 0,
+          "class_name": "Cardboard",
+          "precision": 0.7768794978174138,
+          "recall": 0.5588619577694113
+        },
+        {
+          "class_id": 1,
+          "class_name": "Glass",
+          "precision": 0.9457883835766757,
+          "recall": 0.8108108108108109
+        },
+        {
+          "class_id": 2,
+          "class_name": "Metal",
+          "precision": 0.908655120402536,
+          "recall": 0.8410672853828306
+        },
+        {
+          "class_id": 3,
+          "class_name": "Paper",
+          "precision": 0.9130912423979626,
+          "recall": 0.7070707070707071
+        },
+        {
+          "class_id": 4,
+          "class_name": "Plastic",
+          "precision": 0.9196323444523774,
+          "recall": 0.8734793187347932
+        }
+      ],
+      "ultralytics_save_dir": "/home/phill/Documents/School/9_Computer Vision and NLP/Project/GitHub/clean_project/model_training/runs/train/yolov8n_garbage_v2-1/eval/eval_val"
+    },
+    "test": {
+      "split": "test",
+      "num_classes": 5,
+      "metrics": {
+        "precision": 0.9303414059844259,
+        "recall": 0.8254859013283211,
+        "f1": 0.8738366108502849,
+        "map50": 0.9196044630966924,
+        "map75": 0.845739833728772,
+        "map50_95": 0.7647328737543232
+      },
+      "per_class": [
+        {
+          "class_id": 0,
+          "class_name": "Cardboard",
+          "precision": 0.8811132769348681,
+          "recall": 0.7232261995178172
+        },
+        {
+          "class_id": 1,
+          "class_name": "Glass",
+          "precision": 0.958882549918883,
+          "recall": 0.832883660212895
+        },
+        {
+          "class_id": 2,
+          "class_name": "Metal",
+          "precision": 0.9295680662451999,
+          "recall": 0.8163778964737767
+        },
+        {
+          "class_id": 3,
+          "class_name": "Paper",
+          "precision": 0.9162013336634329,
+          "recall": 0.9166666666666666
+        },
+        {
+          "class_id": 4,
+          "class_name": "Plastic",
+          "precision": 0.9659418031597461,
+          "recall": 0.8382750837704499
+        }
+      ],
+      "ultralytics_save_dir": "/home/phill/Documents/School/9_Computer Vision and NLP/Project/GitHub/clean_project/model_training/runs/train/yolov8n_garbage_v2-1/eval/eval_test"
+    }
+  }
+}

@@ -14,10 +14,17 @@ Usage:
 """
 
 import os
+
+# Must be set BEFORE any 'import cv2' (directly or transitively via ultralytics).
+# Without this, MSMF (the default Windows capture backend) opens USB cameras
+# but silently fails to deliver frames, leaving 'output.png' frozen.
+os.environ.setdefault("OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS", "0")
+
 import threading
 import time
 from pathlib import Path
 
+import ollama
 from pynput import keyboard
 from ultralytics import YOLO
 
@@ -94,6 +101,15 @@ def main() -> None:
         debug=cfg["nlp"].get("debug", False),
     )
 
+    # --- Warm up the Ollama model so the first user question is fast ---
+    # Without this, the first 'start' or chat call would block while Ollama
+    # loads the model into memory.
+    print(f"Warming up Ollama model '{cfg['nlp']['model']}'...")
+    ollama.chat(
+        model=cfg["nlp"]["model"],
+        messages=[{"role": "user", "content": "ok"}],
+    )
+
     # --- Shared stop event: set when ESC is pressed ---
     stop_event = threading.Event()
 
@@ -107,9 +123,10 @@ def main() -> None:
 
     # --- Start daemon threads ---
     print("Starting vision and chatbot threads...")
+    camera_index = int(cfg["vision"].get("camera_index", 0))
     vision_thread = threading.Thread(
         target=run_vision_thread,
-        args=(model, temp_dir, stop_event),
+        args=(model, temp_dir, stop_event, camera_index),
         daemon=True,
     )
     nlp_thread = threading.Thread(

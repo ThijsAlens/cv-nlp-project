@@ -63,12 +63,13 @@ def run_vision_thread(
     model: YOLO,
     temp_dir: Path,
     stop_event: threading.Event,
+    camera_index: int = 0,
 ) -> None:
     """
     Run the vision capture-and-inference loop as a daemon thread.
 
-    Captures frames from webcam index 0 continuously until 'stop_event'
-    is set (triggered by the ESC key in 'demo.py').
+    Captures frames from the webcam at 'camera_index' continuously until
+    'stop_event' is set (triggered by the ESC key in 'demo.py').
 
     Each frame is centre-cropped to a square and resized to 640x640 before
     being passed to YOLO, matching the model's training resolution.
@@ -76,10 +77,13 @@ def run_vision_thread(
     # Short pause to allow other threads to initialise first.
     time.sleep(2)
 
-    cap = cv2.VideoCapture(0)
+    # Pass cv2.CAP_ANY explicitly so the index->device mapping matches what the
+    # 'any' backend produced during probing (0 = USB cam, 1 = internal webcam).
+    # Single-arg cv2.VideoCapture(index) can pick a different driver on Windows.
+    cap = cv2.VideoCapture(camera_index, cv2.CAP_ANY)
     if not cap.isOpened():
         raise RuntimeError(
-            "Could not open webcam (index 0). "
+            f"Could not open webcam (index {camera_index}). "
             "Ensure a webcam is connected and not in use by another application."
         )
 

@@ -26,20 +26,20 @@ model:
   # or an absolute path to a local checkpoint.
   pretrained_weights: yolov8n.pt
   # Name for this training run. Used as the output subfolder name inside 'output_dir'.
-  run_name: yolov8n_garbage_v1
+  run_name: yolov8n_garbage_v2-1
   # Directory where training run folders are saved.
   output_dir: ./runs/train
 
 # --- Training hyperparameters ---
 training:
-  epochs: 4  # <--- CHANGE THIS TO 100 FOR FULL TRAINING!!!
+  epochs: 100
   imgsz: 640
-  batch: 32
+  batch: -1
   # Device to train on: '0' for first GPU, 'cpu' for CPU, '0,1' for multi-GPU.
   device: "0"
   workers: 4
   # Number of backbone layers to freeze at the start of training.
-  freeze: 10
+  freeze: 5
   # Early stopping: stop if no improvement for this many epochs.
   patience: 20
   # Automatic mixed precision (speeds up training on modern GPUs).
@@ -48,9 +48,58 @@ training:
   cache: false
   # Class balancing settings for imbalanced datasets.
   # Set 'balanced_training' to true to apply inverse-frequency class weights.
-  balanced_training: false
+  balanced_training: true
   # Strength of the inverse-frequency weighting (0.0 = none, 1.0 = full).
-  balanced_cls_pw: 0.25
+  balanced_cls_pw: 0.5
+  # Resume training from a checkpoint instead of starting fresh.
+  # Set to false to start a new run, or a path (relative to the project root or absolute)
+  # to a 'last.pt' file. Ultralytics restores the saved epoch and all training args.
+  # Example: ./runs/train/yolov8n_garbage_v2-1/weights/last.pt
+  resume: ./runs/train/yolov8n_garbage_v2-1-4/weights/last.pt
+
+# --- Optimizer ---
+optimizer:
+  # Optimizer name: 'auto' lets Ultralytics pick, or use 'SGD', 'Adam', 'AdamW', 'RMSProp'.
+  name: SGD
+  # Use a cosine learning-rate schedule (lr decays smoothly toward zero over training).
+  cos_lr: true
+
+# --- Augmentation ---
+# Probabilities and ranges applied to images during training.
+augmentation:
+  # Vary image size per batch (False = fixed at 'training.imgsz').
+  multi_scale: false
+  # Turn mosaic OFF for the last N epochs (helps final convergence on real images).
+  close_mosaic: 20
+  # Max random rotation in degrees.
+  degrees: 10.0
+  # Max random translation as a fraction of imgsz.
+  translate: 0.1
+  # Max random scale variation (zoom in/out).
+  scale: 0.5
+  # Probability of horizontal flip.
+  fliplr: 0.5
+  # Probability of mosaic augmentation (stitches 4 images together).
+  mosaic: 1.0
+  # Probability of mixup augmentation (blends two images).
+  mixup: 0.1
+  # Probability of copy-paste augmentation (pastes objects between images).
+  copy_paste: 0.1
+  # HSV hue jitter (kept small to preserve material colors).
+  hsv_h: 0.015
+  # HSV saturation jitter.
+  hsv_s: 0.5
+  # HSV value (brightness) jitter.
+  hsv_v: 0.4
+
+# --- Logging ---
+logging:
+  # Generate training plots (loss curves, PR curves, confusion matrix).
+  plots: true
+  # Run validation each epoch.
+  val: true
+  # Verbose training output.
+  verbose: true
 
 # --- Post-training evaluation ---
 evaluation:
@@ -64,4 +113,4 @@ evaluation:
 # --- Export options ---
 export:
   # Export the best checkpoint to ONNX format after training.
-  onnx: false
+  onnx: true

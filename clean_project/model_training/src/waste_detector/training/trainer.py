@@ -61,7 +61,19 @@ class YoloTrainer:
           6. Write a run_summary.json to the output directory.
         """
         cfg = self.config
-        model = YOLO(cfg.model_weights)
+
+        # --- Load model: from checkpoint if resuming, else from pretrained weights ---
+        if cfg.resume:
+            resume_path = Path(cfg.resume)
+            if not resume_path.is_file():
+                raise FileNotFoundError(
+                    f"Cannot resume: checkpoint not found at '{resume_path}'. "
+                    f"Set 'training.resume' to false to start a fresh run."
+                )
+            print(f"Resuming training from: {resume_path}")
+            model = YOLO(str(resume_path))
+        else:
+            model = YOLO(cfg.model_weights)
 
         # --- Assemble core training arguments ---
         train_kwargs: Dict[str, Any] = {
@@ -77,27 +89,33 @@ class YoloTrainer:
             "amp": cfg.amp,
             "project": cfg.project,
             "name": cfg.run_name,
-            # Optimizer settings.
-            "optimizer": "auto",
-            "cos_lr": True,
-            # Augmentation settings (conservative defaults for materials dataset).
-            "multi_scale": 0.25,
-            "close_mosaic": 20,
-            "degrees": 5.0,
-            "translate": 0.05,
-            "scale": 0.2,
-            "fliplr": 0.5,
-            "mosaic": 0.5,
-            "mixup": 0.0,
-            "copy_paste": 0.0,
-            "hsv_h": 0.015,
-            "hsv_s": 0.7,
-            "hsv_v": 0.4,
-            # Output options.
-            "plots": True,
-            "val": True,
-            "verbose": True,
+            # Optimizer settings (configured in 'config/train_config.yaml').
+            "optimizer": cfg.optimizer,
+            "cos_lr": cfg.cos_lr,
+            # Augmentation settings (configured in 'config/train_config.yaml').
+            "multi_scale": cfg.multi_scale,
+            "close_mosaic": cfg.close_mosaic,
+            "degrees": cfg.degrees,
+            "translate": cfg.translate,
+            "scale": cfg.scale,
+            "fliplr": cfg.fliplr,
+            "mosaic": cfg.mosaic,
+            "mixup": cfg.mixup,
+            "copy_paste": cfg.copy_paste,
+            "hsv_h": cfg.hsv_h,
+            "hsv_s": cfg.hsv_s,
+            "hsv_v": cfg.hsv_v,
+            # Logging options.
+            "plots": cfg.plots,
+            "val": cfg.val,
+            "verbose": cfg.verbose,
         }
+
+        # --- Tell Ultralytics to resume from the checkpoint's saved state ---
+        # When 'resume=True', Ultralytics restores epoch, optimizer, and training args
+        # from the checkpoint, overriding most of the kwargs above.
+        if cfg.resume:
+            train_kwargs["resume"] = True
 
         # --- Add class-balancing weights if requested ---
         if cfg.balanced_training:

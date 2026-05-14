@@ -41,6 +41,10 @@ def main() -> None:
     dataset_cfg = cfg["dataset"]
     model_cfg = cfg["model"]
     train_cfg = cfg["training"]
+    # New optional sections (each falls back to dataclass defaults if absent).
+    opt_cfg = cfg.get("optimizer", {})
+    aug_cfg = cfg.get("augmentation", {})
+    log_cfg = cfg.get("logging", {})
     eval_cfg = cfg.get("evaluation", {})
     export_cfg = cfg.get("export", {})
 
@@ -68,6 +72,16 @@ def main() -> None:
     if not output_dir.is_absolute():
         output_dir = (_PROJECT_ROOT / output_dir).resolve()
 
+    # Resolve the 'resume' option: accept either false/empty (fresh run) or a path string.
+    resume_val = train_cfg.get("resume", False)
+    if isinstance(resume_val, str) and resume_val:
+        resume_path = Path(resume_val)
+        if not resume_path.is_absolute():
+            resume_path = (_PROJECT_ROOT / resume_path).resolve()
+        resume_str = str(resume_path)
+    else:
+        resume_str = ""
+
     train_config = TrainConfig(
         data_yaml=spec.training_yaml,
         model_weights=model_cfg["pretrained_weights"],
@@ -84,6 +98,27 @@ def main() -> None:
         project=str(output_dir),
         balanced_training=train_cfg.get("balanced_training", False),
         balanced_cls_pw=float(train_cfg.get("balanced_cls_pw", 0.25)),
+        resume=resume_str,
+        # Optimizer.
+        optimizer=opt_cfg.get("name", "auto"),
+        cos_lr=opt_cfg.get("cos_lr", True),
+        # Augmentation.
+        multi_scale=aug_cfg.get("multi_scale", False),
+        close_mosaic=aug_cfg.get("close_mosaic", 20),
+        degrees=float(aug_cfg.get("degrees", 5.0)),
+        translate=float(aug_cfg.get("translate", 0.05)),
+        scale=float(aug_cfg.get("scale", 0.2)),
+        fliplr=float(aug_cfg.get("fliplr", 0.5)),
+        mosaic=float(aug_cfg.get("mosaic", 0.5)),
+        mixup=float(aug_cfg.get("mixup", 0.0)),
+        copy_paste=float(aug_cfg.get("copy_paste", 0.0)),
+        hsv_h=float(aug_cfg.get("hsv_h", 0.015)),
+        hsv_s=float(aug_cfg.get("hsv_s", 0.7)),
+        hsv_v=float(aug_cfg.get("hsv_v", 0.4)),
+        # Logging.
+        plots=log_cfg.get("plots", True),
+        val=log_cfg.get("val", True),
+        verbose=log_cfg.get("verbose", True),
     )
 
     # --- Run training ---

@@ -11,3 +11,7 @@ CLAUDE.md
 runs/train/*
 !runs/train/latest/
 !runs/train/latest/**
+!runs/train/yolov8n_garbage_v2-1-4/
+!runs/train/yolov8n_garbage_v2-1-4/**
+!runs/evaluate/yolov8n_garbage_v2-1-4_test-3/
+!runs/evaluate/yolov8n_garbage_v2-1-4_test-3/**
