@@ -13,11 +13,26 @@ vision:
   # OpenCV camera index passed to cv2.VideoCapture.
   # 0 = USB camera, 1 = internal laptop webcam.
   camera_index: 0
+  # Rolling prediction window. When enabled, the displayed class and confidence
+  # for each detected box are taken from the most frequent class across the last
+  # 'rolling_window_size' frames (with the confidence averaged over that class).
+  # The bounding box geometry is NOT smoothed and always comes from the current frame.
+  # Set 'use_rolling_window' to false to display the raw per-frame YOLO output.
+  use_rolling_window: true
+  rolling_window_size: 20
+  # Maximum allowed bounding box size, expressed as a fraction of the frame side.
+  # A detection is dropped when BOTH its width and its height exceed this fraction
+  # of the frame (640x640). For example, with a value of 0.8 any box larger than
+  # 512x512 is ignored. This suppresses the 'phantom' full-frame predictions that
+  # YOLO can produce when nothing is in front of the camera (for example, calling
+  # an empty desk 'cardboard').
+  # Set to 1.0 to disable the filter.
+  max_bbox_size: 0.8
 
 # --- NLP / chatbot ---
 nlp:
   # Ollama model name. The model must be pulled before running: 'ollama pull <name>'.
-  model: granite4.1:3b
+  model: qwen2.5:3b
   # Sentence-transformer model used to embed documents and queries for FAISS.
   embedding_model: all-MiniLM-L6-v2
   # Number of general-rule chunks returned by FAISS per query.
@@ -26,6 +41,19 @@ nlp:
   bm25_top_k: 1
   # Print retrieved RAG chunks and the extracted location to the console.
   debug: false
+
+# --- Optional graphical user interface ---
+# When 'enabled' is true, the demo opens a window showing the live annotated
+# webcam feed on the left and the chatbot conversation on the right, instead of
+# using the terminal. When false, the demo behaves exactly as before: the
+# annotated feed is written to 'temp/output.png' and the chat runs in the
+# terminal.
+gui:
+  enabled: true
+  # Refresh rate for the live feed inside the GUI, in milliseconds. Lower means
+  # smoother but more CPU. The vision thread itself runs as fast as YOLO allows;
+  # this only controls how often the GUI re-reads 'temp/output.png'.
+  refresh_ms: 100
 
 # --- File paths (relative to the project root) ---
 paths:

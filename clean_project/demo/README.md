@@ -37,8 +37,17 @@ Press **ESC** to stop.
 | Input | What happens |
 |-------|-------------|
 | `start` | Reads the latest YOLO detections and generates a disposal instruction. |
+| **Ctrl+W** | Global hotkey that does the same thing as `start`. Useful when both hands are holding an object. |
+| `clear` | Wipes the chat history without needing a detection. Starts a fresh conversation. |
 | Any question | Answers using RAG context and the conversation history. |
 | **ESC** | Stops both threads and exits the program. |
+
+## Optional GUI
+
+Set `gui.enabled: true` in `config/demo_config.yaml` to replace the terminal
+chat and the separate `output.png` preview with a single resizable window
+that shows the live annotated feed on the left and the chatbot on the right.
+See `gui/README.md` for the controls and architecture.
 
 ## Configuration
 
@@ -49,6 +58,7 @@ No Python code needs to change.
 
 ```
 config/           demo_config.yaml and README
+gui/              Optional Tkinter window (enable via gui.enabled in YAML)
 models/           Trained model bundles (weights/best.pt)
 nlp/              RAG system, chatbot, and NLP thread runner
   documents/

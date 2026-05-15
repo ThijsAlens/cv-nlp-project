@@ -124,28 +124,68 @@ def main() -> None:
     # --- Start daemon threads ---
     print("Starting vision and chatbot threads...")
     camera_index = int(cfg["vision"].get("camera_index", 0))
+    # Read the rolling-window options. They are optional, so defaults are
+    # supplied here for older YAML files that do not define them.
+    use_rolling_window = bool(cfg["vision"].get("use_rolling_window", False))
+    rolling_window_size = int(cfg["vision"].get("rolling_window_size", 20))
+    # Maximum bounding box size as a fraction of the frame side. 1.0 disables
+    # the filter (legacy behaviour for older YAML files without this key).
+    max_bbox_size = float(cfg["vision"].get("max_bbox_size", 1.0))
     vision_thread = threading.Thread(
         target=run_vision_thread,
-        args=(model, temp_dir, stop_event, camera_index),
+        args=(
+            model,
+            temp_dir,
+            stop_event,
+            camera_index,
+            use_rolling_window,
+            rolling_window_size,
+            max_bbox_size,
+        ),
         daemon=True,
     )
-    nlp_thread = threading.Thread(
-        target=run_nlp_thread,
-        args=(assistant, temp_dir, stop_event),
-        daemon=True,
-    )
+
+    # Read the optional 'gui' section. When 'enabled' is true the GUI runs
+    # on the main thread; the terminal-based NLP runner is skipped. When
+    # false or absent, the original terminal behaviour is preserved verbatim.
+    gui_cfg = cfg.get("gui") or {}
+    gui_enabled = bool(gui_cfg.get("enabled", False))
+    gui_refresh_ms = int(gui_cfg.get("refresh_ms", 100))
+
+    # The terminal NLP thread is only used when the GUI is disabled, since
+    # the GUI calls into 'WasteAssistant' directly from its own callbacks.
+    nlp_thread = None
+    if not gui_enabled:
+        nlp_thread = threading.Thread(
+            target=run_nlp_thread,
+            args=(assistant, temp_dir, stop_event),
+            daemon=True,
+        )
+
     vision_thread.start()
-    nlp_thread.start()
+    if nlp_thread is not None:
+        nlp_thread.start()
 
     # --- Start the keyboard listener for ESC ---
+    # ESC remains a global hotkey in both modes so the user can stop the demo
+    # from anywhere, not just from the focused GUI window.
     listener = keyboard.Listener(on_press=_on_key_press)
     listener.start()
 
     print('All threads started. Press "ESC" to stop.\n')
 
-    # Main thread sleeps while the daemon threads run in the background.
-    while not stop_event.is_set():
-        time.sleep(1)
+    # -------------------------------------------------------
+    if gui_enabled:
+        # GUI mode: the main thread runs the Tk mainloop. The window blocks
+        # here until it is closed (by ESC, by the OS close button, or by an
+        # internal error). Import is local so a missing optional dependency
+        # only fails when the GUI is actually requested.
+        from gui.runner import run_gui
+        run_gui(assistant, temp_dir, stop_event, gui_refresh_ms)
+    else:
+        # Terminal mode: main thread sleeps while the daemon threads work.
+        while not stop_event.is_set():
+            time.sleep(1)
 
     # Give threads a moment to print any final output before exiting.
     time.sleep(2)

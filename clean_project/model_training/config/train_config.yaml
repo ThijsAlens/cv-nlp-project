@@ -7,7 +7,7 @@
 # --- Dataset ---
 dataset:
   # Path to the dataset root folder. Can be absolute or relative to the project root.
-  path: ./data/Totaal_dataset
+  path: ./data/all_data
   # Filename of the source dataset YAML inside the dataset path.
   yaml: data.yaml
   # Expected class names. Used only for validation against the dataset YAML.
@@ -24,15 +24,15 @@ model:
   # Pretrained YOLO weights to start from.
   # Use a model name (e.g. 'yolov8n.pt', 'yolov8s.pt') to download from Ultralytics,
   # or an absolute path to a local checkpoint.
-  pretrained_weights: yolov8n.pt
+  pretrained_weights: yolo11s.pt
   # Name for this training run. Used as the output subfolder name inside 'output_dir'.
-  run_name: yolov8n_garbage_v2-1
+  run_name: yolo11s_garbage_v3
   # Directory where training run folders are saved.
   output_dir: ./runs/train
 
 # --- Training hyperparameters ---
 training:
-  epochs: 100
+  epochs: 80
   imgsz: 640
   batch: -1
   # Device to train on: '0' for first GPU, 'cpu' for CPU, '0,1' for multi-GPU.
@@ -55,7 +55,7 @@ training:
   # Set to false to start a new run, or a path (relative to the project root or absolute)
   # to a 'last.pt' file. Ultralytics restores the saved epoch and all training args.
   # Example: ./runs/train/yolov8n_garbage_v2-1/weights/last.pt
-  resume: ./runs/train/yolov8n_garbage_v2-1-4/weights/last.pt
+  resume: false
 
 # --- Optimizer ---
 optimizer:
