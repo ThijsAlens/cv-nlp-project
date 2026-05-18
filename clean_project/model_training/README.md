@@ -27,6 +27,16 @@ uv run python scripts/run_crop_showcase.py
 # (Optional) Download and prepare the TACO dataset
 # -> edit the CONFIG block in scripts/run_prepare_taco.py first
 uv run python scripts/run_prepare_taco.py
+
+# (Optional) Build a class-merged sibling dataset (e.g. Cardboard merged into Paper)
+# -> edit the CONFIG block in scripts/run_merge_classes.py first
+uv run python scripts/run_merge_classes.py
+
+# (Optional) Fine-tune the trained model on real-world images
+# -> edit constants at the top of scripts/run_split_finetune_dataset.py if needed
+uv run python scripts/run_split_finetune_dataset.py
+uv run python scripts/run_finetune_train.py
+uv run python scripts/run_finetune_evaluate.py
 ```
 
 ## Project layout
@@ -51,6 +61,8 @@ See each subfolder's README.md for details.
 | `config/train_config.yaml` | `run_train.py` |
 | `config/evaluate_config.yaml` | `run_evaluate.py` |
 | `config/inference_config.yaml` | `run_predict.py`, `run_crop_showcase.py` |
+| `config/finetune_train_config.yaml` | `run_finetune_train.py` |
+| `config/finetune_evaluate_config.yaml` | `run_finetune_evaluate.py` |
 | `config/bin_mapping.json` | inference scripts and `GarbageDetector` |
 
 ## Dataset
@@ -73,3 +85,37 @@ The default Totaal dataset has 5 material classes that map to Belgian household 
 | Plastic | PMD |
 
 To change the bin routing, edit `config/bin_mapping.json`.
+
+## Class merging
+
+`scripts/run_merge_classes.py` builds a sibling dataset folder (default:
+`data/Totaal_dataset_merged`) where some YOLO classes are merged together.
+The default merge collapses `Cardboard` into `Paper`, leaving 4 classes:
+`Glass`, `Metal`, `Plastic`, `Paper`. Image files are not duplicated: each
+image in the new dataset is a hardlink (`os.link`) to the corresponding
+source image, and only the YOLO `.txt` label files are rewritten with
+remapped class ids. The source and target dataset folders must live on
+the same filesystem/drive (hardlinks cannot cross volumes).
+
+After running the merge script, `config/train_config.yaml` and
+`config/evaluate_config.yaml` already point at the merged dataset, so the
+normal training and evaluation commands pick it up without further edits.
+
+## Fine-tuning on real-world images
+
+`scripts/run_split_finetune_dataset.py` builds a `train/val/test` split
+under `data/FINALE_TESTSET_finetune_split/` from the 200 real-world
+images in `data/FINALE_TESTSET_merged/`. The split is seeded and
+recorded in `split_manifest.json` so the held-out test images can be
+audited later.
+
+`scripts/run_finetune_train.py` then fine-tunes the trained checkpoint
+on the 100 training images (config in `config/finetune_train_config.yaml`).
+The fine-tune config uses heavier backbone freezing, fewer epochs, and
+gentler augmentation than the from-scratch training config -- the goal
+is a small but noticeable shift toward real-world performance without
+overfitting the tiny set or wiping out the broader Totaal-trained knowledge.
+
+`scripts/run_finetune_evaluate.py` evaluates the fine-tuned checkpoint
+on the 80 truly-unseen images recorded in `split_manifest.json -> files.test`,
+writing the results to `runs/evaluate/finetune_real_results.json`.

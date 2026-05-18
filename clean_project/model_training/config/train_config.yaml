@@ -7,26 +7,29 @@
 # --- Dataset ---
 dataset:
   # Path to the dataset root folder. Can be absolute or relative to the project root.
-  path: ./data/all_data
+  # Points at the class-merged variant produced by 'scripts/run_merge_classes.py'.
+  # To train on the unmerged 5-class dataset, set this back to './data/Totaal_dataset'
+  # (or './data/all_data') and restore the 5 entries under 'classes' below.
+  path: ./data/Totaal_dataset_merged
   # Filename of the source dataset YAML inside the dataset path.
   yaml: data.yaml
   # Expected class names. Used only for validation against the dataset YAML.
   # Training always uses the full class list found in the dataset.
+  # These must match the merge spec at the top of 'scripts/run_merge_classes.py'.
   classes:
-    - Cardboard
     - Glass
     - Metal
-    - Paper
     - Plastic
+    - Paper
 
 # --- Model ---
 model:
   # Pretrained YOLO weights to start from.
   # Use a model name (e.g. 'yolov8n.pt', 'yolov8s.pt') to download from Ultralytics,
   # or an absolute path to a local checkpoint.
-  pretrained_weights: yolo11s.pt
+  pretrained_weights: yolov8n.pt
   # Name for this training run. Used as the output subfolder name inside 'output_dir'.
-  run_name: yolo11s_garbage_v3
+  run_name: yolov8n_garbage_v4
   # Directory where training run folders are saved.
   output_dir: ./runs/train
 
@@ -109,6 +112,12 @@ evaluation:
     - val
     - test
   batch: 8
+  # Also compute precision/recall/F1 from the confusion matrix with the
+  # 'background' row/column removed. These no-background metrics answer
+  # 'given a detection, was the class correct?' without penalising missed
+  # detections (FN-as-background) or false alarms (FP-as-background).
+  # The standard mAP/precision/recall metrics are still computed regardless.
+  exclude_background: true
 
 # --- Export options ---
 export:

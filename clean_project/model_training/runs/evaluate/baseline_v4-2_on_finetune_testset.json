@@ -1,0 +1,125 @@
+{
+  "weights": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\clean_project\\model_training\\runs\\train\\yolov8n_garbage_v4-2\\weights\\best.pt",
+  "data_yaml": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\clean_project\\model_training\\data\\FINALE_TESTSET_finetune_split\\data.yaml",
+  "imgsz": 640,
+  "batch": 8,
+  "device": "0",
+  "exclude_background": true,
+  "results": {
+    "test": {
+      "split": "test",
+      "num_classes": 4,
+      "metrics": {
+        "precision": 0.7036934554500908,
+        "recall": 0.4470078727559432,
+        "f1": 0.4925675591845614,
+        "map50": 0.47949629109038633,
+        "map75": 0.32972977437099305,
+        "map50_95": 0.29241694966053333
+      },
+      "per_class": [
+        {
+          "class_id": 0,
+          "class_name": "Glass",
+          "precision": 1.0,
+          "recall": 0.15306944168790954
+        },
+        {
+          "class_id": 1,
+          "class_name": "Metal",
+          "precision": 0.5451011230929057,
+          "recall": 0.375
+        },
+        {
+          "class_id": 2,
+          "class_name": "Plastic",
+          "precision": 0.5434007246800712,
+          "recall": 0.6129032258064516
+        },
+        {
+          "class_id": 3,
+          "class_name": "Paper",
+          "precision": 0.726271974027386,
+          "recall": 0.6470588235294118
+        }
+      ],
+      "ultralytics_save_dir": "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\clean_project\\model_training\\runs\\evaluate\\yolov8n_garbage_v4-2_test",
+      "no_background_metrics": {
+        "accuracy": 0.7384615384615385,
+        "macro_precision": 0.8327232142857143,
+        "macro_recall": 0.6193528693528694,
+        "macro_f1": 0.6132878362103573,
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Glass",
+            "precision": 1.0,
+            "recall": 0.1111111111111111,
+            "f1": 0.19999999999999998,
+            "support": 9
+          },
+          {
+            "class_id": 1,
+            "class_name": "Metal",
+            "precision": 0.8571428571428571,
+            "recall": 0.46153846153846156,
+            "f1": 0.6,
+            "support": 13
+          },
+          {
+            "class_id": 2,
+            "class_name": "Plastic",
+            "precision": 0.59375,
+            "recall": 0.9047619047619048,
+            "f1": 0.7169811320754718,
+            "support": 21
+          },
+          {
+            "class_id": 3,
+            "class_name": "Paper",
+            "precision": 0.88,
+            "recall": 1.0,
+            "f1": 0.9361702127659575,
+            "support": 22
+          }
+        ],
+        "confusion_matrix_no_background": [
+          [
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            6,
+            0,
+            0
+          ],
+          [
+            7,
+            6,
+            19,
+            0
+          ],
+          [
+            0,
+            1,
+            2,
+            22
+          ]
+        ],
+        "class_names": [
+          "Glass",
+          "Metal",
+          "Plastic",
+          "Paper"
+        ],
+        "plot_paths": [
+          "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\clean_project\\model_training\\runs\\evaluate\\yolov8n_garbage_v4-2_test\\confusion_matrix_no_background.png",
+          "C:\\Users\\phill\\Documents\\School\\MaNaMa\\9_Computer Vision and NLP\\Project\\testing_projects\\GitHub\\cv-nlp-project\\clean_project\\model_training\\runs\\evaluate\\yolov8n_garbage_v4-2_test\\confusion_matrix_no_background_normalized.png"
+        ]
+      }
+    }
+  }
+}

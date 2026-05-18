@@ -5,16 +5,40 @@
 # ============================================================
 
 # Path to the trained model checkpoint (best.pt from a training run).
-weights: ./runs/train/yolov8n_garbage_v2-1-4/weights\best.pt
+weights: ./runs/train/yolov8n_garbage_v4-2/weights/best.pt
+
+# Expected class names. Used purely as a sanity check against the dataset
+# YAML named by 'dataset_yaml' below AND against the class list baked into
+# the model at 'weights'. If any of the three lists disagree on either the
+# class count or the set of names, a warning is printed before evaluation
+# starts. The evaluator itself always uses the dataset YAML's class list,
+# so this field is for catching configuration mistakes early (for example,
+# evaluating an old 5-class checkpoint against a 4-class merged dataset).
+classes:
+  - Glass
+  - Metal
+  - Plastic
+  - Paper
 
 # Path to the dataset YAML used for evaluation.
-dataset_yaml: ./data/FINALE_TESTSET/data.yaml
+# Points at the *same* held-out test split that the fine-tune workflow uses,
+# so this baseline run (pre-finetune v4-2 checkpoint) and
+# 'run_finetune_evaluate.py' (post-finetune checkpoint) are directly
+# comparable -- same 80 images, recorded in
+# './data/FINALE_TESTSET_finetune_split/split_manifest.json'.
+# Set this back to './data/FINALE_TESTSET_merged/data.yaml' (or any other
+# dataset YAML) if you want to evaluate against a different test set.
+# If you switch to a different dataset, make sure its class list matches
+# the one the checkpoint at 'weights' was trained on, otherwise the
+# per-class metrics will be misaligned.
+dataset_yaml: ./data/FINALE_TESTSET_finetune_split/data.yaml
 
-# Which splits to evaluate on.
+# Which splits to evaluate on. Only 'test' makes sense for an apples-to-apples
+# comparison against the fine-tuned model -- 'train' and 'val' contain images
+# the fine-tuned model has already seen.
 splits:
- - test
+  - test
   # - val
-  # - test
 
 # Image size used during evaluation (should match training imgsz).
 imgsz: 640
@@ -26,4 +50,13 @@ batch: 8
 device: "0"
 
 # Path where the evaluation results JSON will be saved.
-output: ./runs/evaluate/results.json
+# Distinct filename from 'finetune_evaluate_config.yaml' so the baseline and
+# post-finetune reports can sit side-by-side in 'runs/evaluate/'.
+output: ./runs/evaluate/baseline_v4-2_on_finetune_testset.json
+
+# Also compute precision/recall/F1 from the confusion matrix with the
+# 'background' row/column removed. These no-background metrics answer
+# 'given a detection, was the class correct?' without penalising missed
+# detections (FN-as-background) or false alarms (FP-as-background).
+# The standard mAP/precision/recall metrics are still computed regardless.
+exclude_background: true

@@ -34,9 +34,12 @@ CONFIG_PATH = _PROJECT_ROOT / "config" / "train_config.yaml"
 # Main
 # ---------------------------------------------------------------
 
-def main() -> None:
+def main(config_path: Path = CONFIG_PATH) -> None:
     # --- Load and parse the YAML config ---
-    cfg = read_yaml(CONFIG_PATH)
+    # 'config_path' defaults to the canonical training config, but thin wrapper
+    # scripts (e.g. 'run_finetune_train.py') can pass an alternative YAML so
+    # different training regimes can coexist without editing this file.
+    cfg = read_yaml(config_path)
 
     dataset_cfg = cfg["dataset"]
     model_cfg = cfg["model"]
@@ -133,8 +136,18 @@ def main() -> None:
         best_weights = Path(summary["best_weights"])
         splits = eval_cfg.get("splits", ["val"])
         eval_batch = eval_cfg.get("batch", 8)
+        # When enabled, the evaluator also produces precision/recall/F1 derived
+        # from the confusion matrix with the background row/column dropped.
+        exclude_background = bool(eval_cfg.get("exclude_background", False))
+
+        # Use the actual training output directory (which may have an Ultralytics
+        # auto-suffix like '-2' when the configured run_name was already taken)
+        # so the eval plots land inside the same folder as the rest of this run.
+        actual_run_dir = Path(summary["save_dir"])
+        eval_project_dir = actual_run_dir / "eval"
 
         print(f"\nRunning post-training evaluation on splits: {splits}")
+        print(f"Post-eval outputs will be saved under: {eval_project_dir}")
         eval_summary = evaluate_checkpoint(
             weights=best_weights,
             data_yaml=spec.training_yaml,
@@ -142,7 +155,8 @@ def main() -> None:
             imgsz=train_config.imgsz,
             batch=eval_batch,
             device=train_config.device,
-            eval_project=str(output_dir / train_config.run_name / "eval"),
+            eval_project=str(eval_project_dir),
+            exclude_background=exclude_background,
         )
 
         # Save the evaluation results next to the training outputs.
