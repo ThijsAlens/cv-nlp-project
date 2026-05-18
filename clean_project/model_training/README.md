@@ -111,11 +111,11 @@ audited later.
 
 `scripts/run_finetune_train.py` then fine-tunes the trained checkpoint
 on the 100 training images (config in `config/finetune_train_config.yaml`).
-The fine-tune config uses heavier backbone freezing, fewer epochs, and
-gentler augmentation than the from-scratch training config -- the goal
-is a small but noticeable shift toward real-world performance without
-overfitting the tiny set or wiping out the broader Totaal-trained knowledge.
+The fine-tune config uses heavier backbone freezing, fewer epochs and
+gentler augmentation than the from-scratch training config, so the
+checkpoint can shift toward real-world performance without overfitting
+the tiny set or wiping out what was learned from the Totaal dataset.
 
 `scripts/run_finetune_evaluate.py` evaluates the fine-tuned checkpoint
-on the 80 truly-unseen images recorded in `split_manifest.json -> files.test`,
+on the 80 held-out images recorded in `split_manifest.json -> files.test`,
 writing the results to `runs/evaluate/finetune_real_results.json`.

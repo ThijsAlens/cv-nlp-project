@@ -27,7 +27,7 @@ sys.path.insert(0, str(_PROJECT_ROOT / "src"))
 from waste_detector.utils.io import ensure_dir, write_json, write_yaml
 
 # ---------------------------------------------------------------
-# Configuration -- edit these constants, no CLI flags by project convention.
+# Configuration. Edit these constants directly; no CLI flags by project convention.
 # ---------------------------------------------------------------
 
 # Source dataset: the 200 real-world images, currently all under 'test/'.
@@ -48,7 +48,7 @@ SOURCE_SPLIT_DIR = "test"
 CLASSES = ["Glass", "Metal", "Plastic", "Paper"]
 
 # Split ratios as fractions of the source image count. Must sum to 1.0.
-# 50/10/40 of 200 = 100 train / 20 val / 80 test (user's choice for this run).
+# 50/10/40 of 200 gives 100 train / 20 val / 80 test for this run.
 SPLIT_RATIOS = {"train": 0.50, "val": 0.10, "test": 0.40}
 
 # Fixed RNG seed so the same source folder always produces the same split.
@@ -88,9 +88,9 @@ def _partition_counts(total: int, ratios: dict) -> dict:
     """
     Convert split ratios into exact integer counts that sum to 'total'.
 
-    Uses floor for the first two splits and assigns the remainder to the last
-    split so the counts always add up exactly, even when the ratios produce
-    fractional counts (e.g. 0.10 * 47 -> 4.7).
+    Floors the counts for every split except the last, then hands the remainder
+    to the last split so the counts always add up to 'total', even when the
+    ratios give fractional counts (e.g. 0.10 * 47 -> 4.7).
     """
     if abs(sum(ratios.values()) - 1.0) > 1e-9:
         raise ValueError(f"SPLIT_RATIOS must sum to 1.0, got {sum(ratios.values())}")
@@ -166,11 +166,10 @@ def _copy_pair(image_path: Path, source_split: Path, dest_split: Path) -> bool:
 # ---------------------------------------------------------------
 
 def main() -> None:
-    # --- Refuse to clobber an existing output folder ---
+    # --- Refuse to overwrite an existing output folder ---
     # Re-running the splitter on an existing folder would either duplicate
-    # files or, worse, silently produce a split inconsistent with the previous
-    # manifest. Force the user to delete the folder explicitly if they really
-    # want to re-split.
+    # files or silently produce a split that no longer matches the existing
+    # manifest. The user has to delete the folder explicitly to re-split.
     if OUTPUT_DATASET.exists():
         raise FileExistsError(
             f"Output dataset already exists: {OUTPUT_DATASET}\n"
@@ -186,7 +185,7 @@ def main() -> None:
     print(f"Found {total} source images under: {source_split / 'images'}")
 
     # --- Reproducible shuffle ---
-    # Use a *local* RNG so we never touch the global random state.
+    # Use a local RNG so the global random state stays untouched.
     rng = random.Random(RANDOM_SEED)
     shuffled = list(images)
     rng.shuffle(shuffled)
@@ -234,10 +233,10 @@ def main() -> None:
     write_yaml(OUTPUT_DATASET / "data.yaml", data_yaml_payload)
     print(f"Wrote: {OUTPUT_DATASET / 'data.yaml'}")
 
-    # --- Write the split manifest (the audit artifact) ---
-    # The 'files' lists are the persistent record of which source images
-    # landed where. The 'test' list in particular lets a future evaluation
-    # run prove its inputs were genuinely held out from fine-tuning.
+    # --- Write the split manifest ---
+    # The 'files' lists are the record of which source images landed where.
+    # The 'test' list is the one that matters most, since it documents which
+    # 80 images were held out from fine-tuning.
     manifest = {
         "source_dataset": str(SOURCE_DATASET.resolve()),
         "source_split": SOURCE_SPLIT_DIR,

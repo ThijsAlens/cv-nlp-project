@@ -1,9 +1,8 @@
 # ============================================================
-# Fine-tune configuration: nudge an already-trained checkpoint toward
-# real-world images. Read this alongside 'train_config.yaml' to see the
-# differences -- everything here is tuned for a *small* (100-image) training
-# set and a *pretrained* starting point, where the failure modes are
-# overfitting and catastrophic forgetting rather than slow convergence.
+# Fine-tune configuration: take an already-trained checkpoint and nudge it
+# toward real-world images. The settings here are gentler than
+# 'train_config.yaml' because the fine-tune set is tiny (100 images),
+# so the main risks are overfitting and catastrophic forgetting.
 #
 # Run: uv run python scripts/run_finetune_train.py
 # Prerequisite: uv run python scripts/run_split_finetune_dataset.py
@@ -11,10 +10,10 @@
 
 # --- Dataset ---
 dataset:
-  # Output of 'scripts/run_split_finetune_dataset.py'. Contains 100 train,
-  # 20 val, and 80 held-out test images split with RANDOM_SEED=42 from
-  # 'data/FINALE_TESTSET_merged/test/'. The exact filenames per split are
-  # recorded in '<this folder>/split_manifest.json'.
+  # Output folder of 'scripts/run_split_finetune_dataset.py'.
+  # Contains 100 train, 20 val and 80 test images, split with RANDOM_SEED=42
+  # from 'data/FINALE_TESTSET_merged/test/'. The exact filenames per split are
+  # recorded in 'split_manifest.json' inside this folder.
   path: ./data/FINALE_TESTSET_finetune_split
   yaml: data.yaml
   classes:
@@ -25,43 +24,38 @@ dataset:
 
 # --- Model ---
 model:
-  # Start from the checkpoint trained on 'Totaal_dataset_merged' (~9k images,
-  # 80 epochs). This is the whole point of "fine-tuning" rather than re-training.
+  # Start from the checkpoint trained on 'Totaal_dataset_merged' (~9k images, 80 epochs).
+  # This is what makes it a fine-tune instead of a fresh training run.
   pretrained_weights: ./runs/train/yolov8n_garbage_v4-2/weights/best.pt
-  # Suffix '_finetune_real' keeps the lineage obvious in 'runs/train/'.
+  # Suffix '_finetune_real' keeps the lineage visible in 'runs/train/'.
   run_name: yolov8n_garbage_v4-2_finetune_real
   output_dir: ./runs/train
 
 # --- Training hyperparameters ---
-# All values here are deliberately gentler than 'train_config.yaml' because
-# the fine-tune set is only 100 images. Aggressive training on a tiny set
-# would either memorise it (overfitting) or wipe out the knowledge baked
-# into the pretrained checkpoint (catastrophic forgetting).
 training:
-  # 20 epochs is enough to nudge the head/neck weights without driving the
-  # model into the 100-image distribution. With 'cos_lr: true' the lr decays
-  # smoothly to near-zero across this short budget.
+  # 20 epochs is enough to adjust the head and neck without pulling the model
+  # too hard toward the 100-image distribution. With 'cos_lr: true' the lr
+  # decays smoothly to near zero over this short run.
   epochs: 20
   imgsz: 640
-  # Fixed batch instead of auto: 100 training images means at most ~12 batches
-  # per epoch, and auto-batch can pick a value that wastes the small dataset.
+  # Fixed batch size instead of auto. With only 100 training images we get
+  # around 12 batches per epoch, and auto-batch tends to pick a value that
+  # doesn't make sense at this scale.
   batch: 8
   device: "0"
   workers: 4
   # Freeze the entire YOLOv8n backbone (10 modules). Only the neck and the
-  # detection head update during fine-tuning. This is the single strongest
-  # guard against catastrophic forgetting: the broad feature extractor is
-  # preserved, and only the parts that map features to predictions adapt.
+  # detection head update during fine-tuning, which helps avoid catastrophic
+  # forgetting since the feature extractor stays as-is.
   freeze: 10
-  # Early-stop fast on the tiny 20-image val set: 5 epochs of no improvement
-  # almost certainly means we have hit the plateau (or noise) for this regime.
+  # Stop early on the small 20-image val set: 5 epochs without improvement
+  # is usually just noise at this size.
   patience: 5
   amp: true
   cache: false
-  # Class re-balancing is OFF: the pretrained checkpoint is already class
-  # balanced from the 9k-image training run, and inverse-weighting on 100
-  # images would over-react to whichever class happens to be under-represented
-  # in the random 100-image slice.
+  # Class re-balancing is off. The pretrained checkpoint is already balanced
+  # from the 9k-image run, and inverse-weighting on 100 images would over-react
+  # to whichever class happens to be under-represented in the random slice.
   balanced_training: false
   balanced_cls_pw: 0.5
   resume: false
@@ -69,35 +63,34 @@ training:
 # --- Optimizer ---
 optimizer:
   name: SGD
-  # Cosine schedule decays the lr smoothly to ~0 over the 20-epoch run.
+  # Cosine schedule, lr decays to ~0 across the 20 epochs.
   cos_lr: true
 
 # --- Augmentation ---
-# Reduced across the board. The point of fine-tuning on real-world data is
-# that the model *sees* real-world data; heavy synthetic transforms dilute
-# exactly the signal we want to learn.
+# Toned down across the board. The whole point of fine-tuning on real-world
+# data is that the model gets to see real images, so heavy synthetic transforms
+# would dilute the signal we actually want to learn.
 augmentation:
   multi_scale: false
-  # Close mosaic early -- with only 20 epochs total, we want the last quarter
-  # of training to see real, un-stitched images so the final weights match
-  # the actual deployment distribution.
+  # Close mosaic early. With 20 total epochs we want the final part of training
+  # to see clean, un-stitched images that match the deployment distribution.
   close_mosaic: 5
-  # Lower rotation: real webcam captures of waste are mostly upright.
+  # Small rotation. Real webcam captures are mostly upright.
   degrees: 3.0
   translate: 0.1
-  # Less zoom variation: object scale in real captures is reasonably stable.
+  # Less zoom variation since object scale in real captures is fairly stable.
   scale: 0.3
   fliplr: 0.5
-  # Mosaic mostly OFF: only a 20% probability so the model occasionally sees
-  # multi-object compositions but isn't constantly trained on synthetic
-  # 4-up stitches that don't resemble webcam frames.
+  # Mosaic mostly off. A 20% probability lets the model occasionally see
+  # multi-object compositions, without constantly training on synthetic
+  # 4-up stitches that don't look like webcam frames.
   mosaic: 0.2
-  # Mixup and copy-paste fully OFF: both produce out-of-distribution images
-  # that hurt more than help when the goal is matching real-world inputs.
+  # Mixup and copy-paste off. Both produce out-of-distribution images that
+  # hurt more than they help when the goal is matching real-world inputs.
   mixup: 0.0
   copy_paste: 0.0
-  # Colour jitter: same hue, but reduced saturation and value jitter so the
-  # model doesn't over-correct away from the real colours it just learned.
+  # Colour jitter: same hue, lower saturation and value variation so the model
+  # doesn't drift away from the colours it just learned.
   hsv_h: 0.015
   hsv_s: 0.3
   hsv_v: 0.3
@@ -109,9 +102,9 @@ logging:
   verbose: true
 
 # --- Post-training evaluation ---
-# Run evaluation immediately after fine-tuning so the val+test scores land
-# inside the same 'runs/train/<run_name>/' folder. The standalone
-# 'finetune_evaluate_config.yaml' is for re-evaluating later.
+# Run evaluation right after fine-tuning so val and test scores land inside
+# the same 'runs/train/<run_name>/' folder. The standalone
+# 'finetune_evaluate_config.yaml' is there for re-evaluating later.
 evaluation:
   run_after_training: true
   splits:
@@ -122,6 +115,6 @@ evaluation:
 
 # --- Export options ---
 export:
-  # ONNX export off by default for fine-tunes: the v4-2 ONNX already exists
-  # and there's no need for a new export until results are confirmed.
+  # ONNX export off by default for fine-tunes. The v4-2 ONNX already exists
+  # and we only need a new export once results are confirmed.
   onnx: false

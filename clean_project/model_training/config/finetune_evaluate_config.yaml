@@ -1,31 +1,30 @@
 # ============================================================
 # Evaluate the fine-tuned checkpoint on the 80 held-out real-world images
-# that were *never* seen during the fine-tune (see 'split_manifest.json').
-# This is the honest measure of how the fine-tune actually shifted the model.
+# that were never seen during fine-tuning (see 'split_manifest.json').
+# Used to measure what the fine-tune actually changed.
 #
 # Run: uv run python scripts/run_finetune_evaluate.py
 # Prerequisite: 'run_finetune_train.py' has completed and produced best.pt.
 # ============================================================
 
-# Path to the fine-tuned checkpoint. If Ultralytics appended a '-2' (or
-# higher) suffix to the run folder, adjust this path to match.
+# Path to the fine-tuned checkpoint. If Ultralytics appended a '-2' (or higher)
+# suffix to the run folder, adjust this path to match.
 weights: ./runs/train/yolov8n_garbage_v4-2_finetune_real/weights/best.pt
 
-# Sanity-check class list -- evaluator uses the dataset YAML's classes
-# regardless, but a mismatch warning here surfaces config drift early.
+# Sanity-check class list. The evaluator uses the dataset YAML's classes
+# regardless, but a mismatch warning here catches config drift early.
 classes:
   - Glass
   - Metal
   - Plastic
   - Paper
 
-# Dataset YAML produced by 'scripts/run_split_finetune_dataset.py'. Its
-# 'test' split is exactly the 80-image held-out set recorded in
-# 'split_manifest.json -> files.test'.
+# Dataset YAML produced by 'scripts/run_split_finetune_dataset.py'. Its 'test'
+# split is the 80-image held-out set listed in 'split_manifest.json -> files.test'.
 dataset_yaml: ./data/FINALE_TESTSET_finetune_split/data.yaml
 
-# Only evaluate on the held-out test split. Evaluating on 'val' or 'train'
-# here would be misleading (those images were seen during fine-tuning).
+# Only evaluate on the held-out test split. Running on 'val' or 'train' would
+# be misleading since those images were seen during fine-tuning.
 splits:
   - test
 
@@ -33,10 +32,10 @@ imgsz: 640
 batch: 8
 device: "0"
 
-# Output path. Distinct file name so this report does not overwrite the
+# Output path. Different filename so this report does not overwrite the
 # evaluation results of the original v4-2 checkpoint.
 output: ./runs/evaluate/finetune_real_results.json
 
-# Also report precision/recall/F1 with the confusion-matrix background
-# row/column removed, same as the standard evaluation config.
+# Also report precision / recall / F1 with the confusion-matrix background
+# row and column removed, same as the standard evaluation config.
 exclude_background: true

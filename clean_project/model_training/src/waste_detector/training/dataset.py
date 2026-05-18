@@ -3,7 +3,7 @@ Dataset YAML discovery and preparation for Ultralytics YOLO training.
 
 Ultralytics requires a YAML file with absolute paths for each split.
 The source YAML (data.yaml from Roboflow or custom) often uses relative paths.
-This module reads the source YAML and generates a canonical training YAML
+This module reads the source YAML and writes a generated training YAML
 (dataset.ultralytics.yaml) with absolute paths and a validated class list.
 """
 
@@ -125,7 +125,7 @@ def build_training_yaml(
     output_name: str = "dataset.ultralytics.yaml",
 ) -> Path:
     """
-    Read the source dataset YAML and write a canonical Ultralytics training YAML.
+    Read the source dataset YAML and write a generated Ultralytics training YAML.
 
     The generated YAML uses the absolute dataset path and validates that
     'nc' matches the number of class names. It is written next to the source YAML.

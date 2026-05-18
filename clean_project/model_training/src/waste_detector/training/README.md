@@ -7,7 +7,7 @@ Handles everything needed to go from a dataset folder to a trained YOLO checkpoi
 | Module | Purpose |
 |--------|---------|
 | `config.py` | `TrainConfig` dataclass - holds all training hyperparameters in one place. |
-| `dataset.py` | Discovers the source dataset YAML, generates a canonical Ultralytics training YAML with absolute paths, and returns a `YoloDatasetSpec`. |
+| `dataset.py` | Discovers the source dataset YAML, generates an Ultralytics training YAML with absolute paths, and returns a `YoloDatasetSpec`. |
 | `trainer.py` | `YoloTrainer` - loads the YOLO model, builds training kwargs, optionally applies class balancing, and runs `model.train()`. |
 | `evaluator.py` | `evaluate_checkpoint()` and `save_evaluation_report()` - run Ultralytics validation and extract metrics (precision, recall, F1, mAP). |
 

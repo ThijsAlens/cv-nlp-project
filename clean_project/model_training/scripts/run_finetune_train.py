@@ -1,8 +1,8 @@
 """
 Thin wrapper that runs 'run_train.main()' against the fine-tune YAML.
 
-Keeps the canonical 'scripts/run_train.py' + 'config/train_config.yaml'
-untouched while still letting the fine-tune workflow live alongside it.
+Keeps 'scripts/run_train.py' and 'config/train_config.yaml' untouched while
+letting the fine-tune workflow live alongside them.
 
 Usage:
   uv run python scripts/run_finetune_train.py
@@ -22,8 +22,8 @@ sys.path.insert(0, str(_PROJECT_ROOT / "scripts"))
 
 from run_train import main as run_train_main  # noqa: E402
 
-# Path to the fine-tune-specific YAML. Edit that file to change fine-tune
-# hyperparameters; this script itself should stay a one-liner.
+# Path to the fine-tune YAML. Edit that file to change fine-tune
+# hyperparameters; this script is just the entry point.
 FINETUNE_CONFIG_PATH = _PROJECT_ROOT / "config" / "finetune_train_config.yaml"
 
 

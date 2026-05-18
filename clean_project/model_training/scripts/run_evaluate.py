@@ -56,8 +56,8 @@ def _read_dataset_classes(data_yaml: Path) -> list:
 def _read_model_classes(weights: Path) -> list:
     """
     Load the YOLO checkpoint just to read its class names and return them as
-    a list in YOLO id order. Loading is cheap and avoids surprises later in
-    the evaluation when a checkpoint's class count disagrees with the data.
+    a list in YOLO id order. Loading is cheap and catches a checkpoint whose
+    class count disagrees with the dataset before the evaluation starts.
     """
     # Local import so 'ultralytics' is only imported when this script runs.
     from ultralytics import YOLO
@@ -73,13 +73,13 @@ def _warn_on_class_mismatch(
 ) -> None:
     """
     Compare the user-declared class list against the dataset YAML and the
-    model checkpoint. Prints a single, clearly-formatted warning per
-    mismatch so configuration mistakes show up before the (slow) evaluation
-    actually runs. Does not raise: the user might intentionally evaluate a
-    mismatched checkpoint, and the evaluator itself will still run.
+    model checkpoint. Prints one warning per mismatch so config mistakes
+    show up before the slow evaluation runs. Does not raise: a mismatched
+    checkpoint can still be evaluated on purpose, and the evaluator itself
+    will still run.
     """
-    # Use sets for the membership comparison so list ordering does not flag
-    # a spurious mismatch when the actual class names line up.
+    # Use sets for the membership comparison so a different list order does
+    # not flag a mismatch when the actual class names line up.
     if expected_classes:
         if set(expected_classes) != set(dataset_classes):
             print(
@@ -101,9 +101,8 @@ def _warn_on_class_mismatch(
                 "checkpoint's classes, not the ones listed in this config."
             )
 
-    # Independent of the user-declared 'classes' field, also warn when the
-    # dataset and the model themselves disagree, because that is the most
-    # common cause of confusing evaluation results.
+    # Also warn when the dataset and the model themselves disagree, since
+    # that is the usual cause of confusing evaluation results.
     if set(dataset_classes) != set(model_classes):
         print(
             "WARNING: the dataset YAML and the model checkpoint declare "
@@ -123,9 +122,9 @@ def _warn_on_class_mismatch(
 
 def main(config_path: Path = CONFIG_PATH) -> None:
     # --- Load config ---
-    # 'config_path' defaults to the canonical evaluation config, but thin wrapper
-    # scripts (e.g. 'run_finetune_evaluate.py') can pass an alternative YAML so
-    # different evaluation targets can coexist without editing this file.
+    # 'config_path' defaults to the main evaluation config, but thin wrapper
+    # scripts (e.g. 'run_finetune_evaluate.py') can pass a different YAML so
+    # the fine-tune workflow can reuse this runner without editing it.
     cfg = read_yaml(config_path)
 
     # --- Resolve paths (support relative paths from project root) ---
@@ -151,16 +150,16 @@ def main(config_path: Path = CONFIG_PATH) -> None:
     imgsz = cfg.get("imgsz", 640)
     batch = cfg.get("batch", 8)
     device = str(cfg.get("device", "0"))
-    # When enabled, the evaluator also produces precision/recall/F1 derived
-    # from the confusion matrix with the background row/column dropped.
+    # When enabled, the evaluator also reports precision / recall / F1
+    # from the confusion matrix with the background row and column dropped.
     exclude_background = bool(cfg.get("exclude_background", False))
 
     # --- Validate the configured class list against the dataset and model ---
-    # The 'classes' field is purely a sanity check; the evaluator itself
-    # uses the dataset YAML's class list. Doing this before evaluation
-    # surfaces configuration mistakes (like pointing 'weights' at an old
-    # 5-class checkpoint while 'dataset_yaml' references a 4-class merged
-    # dataset) immediately instead of after a long inference pass.
+    # The 'classes' field is only a sanity check; the evaluator itself uses
+    # the dataset YAML's class list. Running this check before evaluation
+    # catches config mistakes (like pointing 'weights' at an old 5-class
+    # checkpoint while 'dataset_yaml' references the 4-class merged dataset)
+    # straight away, instead of after a long inference pass.
     expected_classes = list(cfg.get("classes", []) or [])
     dataset_classes = _read_dataset_classes(data_yaml)
     model_classes = _read_model_classes(weights)

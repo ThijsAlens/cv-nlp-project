@@ -7,10 +7,10 @@ No Python code needs to change when you want to adjust settings.
 
 | File | Purpose |
 |------|---------|
-| `train_config.yaml` | All training settings: dataset path, model, hyperparameters, evaluation, and export options. |
+| `train_config.yaml` | All training settings: dataset path, model, hyperparameters, evaluation and export options. |
 | `evaluate_config.yaml` | Checkpoint path and evaluation settings for `run_evaluate.py`. |
-| `inference_config.yaml` | Checkpoint, target image, and output settings for `run_predict.py` and `run_crop_showcase.py`. |
-| `finetune_train_config.yaml` | Fine-tune settings for `run_finetune_train.py`. Mirrors `train_config.yaml`'s structure but starts from a trained `.pt`, freezes the full backbone, uses fewer epochs, and applies gentler augmentation -- tuned for the small (100-image) real-world fine-tune set. |
+| `inference_config.yaml` | Checkpoint, target image and output settings for `run_predict.py` and `run_crop_showcase.py`. |
+| `finetune_train_config.yaml` | Fine-tune settings for `run_finetune_train.py`. Same structure as `train_config.yaml`, but starts from a trained `.pt`, freezes the full backbone, uses fewer epochs and applies gentler augmentation. Tuned for the small (100-image) real-world fine-tune set. |
 | `finetune_evaluate_config.yaml` | Evaluation settings for `run_finetune_evaluate.py`. Targets the 80 held-out test images produced by `scripts/run_split_finetune_dataset.py`. |
 | `bin_mapping.json` | Maps each detected material class to its disposal bin. Edit to add new materials or change bin assignments. |
 

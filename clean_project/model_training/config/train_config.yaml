@@ -1,6 +1,6 @@
 # ============================================================
 # Training configuration for the waste material detector.
-# Edit this file to change dataset, model, and training settings.
+# Edit this file to change dataset, model and training settings.
 # Then run: uv run python scripts/run_train.py
 # ============================================================
 
@@ -49,7 +49,7 @@ training:
   amp: true
   # Cache images in RAM ('ram') or on disk ('disk'). Set to false to disable.
   cache: false
-  # Class balancing settings for imbalanced datasets.
+  # Class balancing for imbalanced datasets.
   # Set 'balanced_training' to true to apply inverse-frequency class weights.
   balanced_training: true
   # Strength of the inverse-frequency weighting (0.0 = none, 1.0 = full).
@@ -64,21 +64,22 @@ training:
 optimizer:
   # Optimizer name: 'auto' lets Ultralytics pick, or use 'SGD', 'Adam', 'AdamW', 'RMSProp'.
   name: SGD
-  # Use a cosine learning-rate schedule (lr decays smoothly toward zero over training).
+  # Cosine learning-rate schedule (lr decays smoothly toward zero over training).
   cos_lr: true
 
 # --- Augmentation ---
 # Probabilities and ranges applied to images during training.
 augmentation:
-  # Vary image size per batch (False = fixed at 'training.imgsz').
+  # Vary image size per batch (false = fixed at 'training.imgsz').
   multi_scale: false
-  # Turn mosaic OFF for the last N epochs (helps final convergence on real images).
+  # Turn mosaic off for the last N epochs. Helps the final epochs converge
+  # on real images instead of synthetic 4-up stitches.
   close_mosaic: 20
   # Max random rotation in degrees.
   degrees: 10.0
   # Max random translation as a fraction of imgsz.
   translate: 0.1
-  # Max random scale variation (zoom in/out).
+  # Max random scale variation (zoom in / out).
   scale: 0.5
   # Probability of horizontal flip.
   fliplr: 0.5
@@ -88,7 +89,7 @@ augmentation:
   mixup: 0.1
   # Probability of copy-paste augmentation (pastes objects between images).
   copy_paste: 0.1
-  # HSV hue jitter (kept small to preserve material colors).
+  # HSV hue jitter. Kept small to preserve material colours.
   hsv_h: 0.015
   # HSV saturation jitter.
   hsv_s: 0.5
@@ -106,17 +107,17 @@ logging:
 
 # --- Post-training evaluation ---
 evaluation:
-  # Run evaluation on the listed splits immediately after training finishes.
+  # Run evaluation on the listed splits right after training finishes.
   run_after_training: true
   splits:
     - val
     - test
   batch: 8
-  # Also compute precision/recall/F1 from the confusion matrix with the
-  # 'background' row/column removed. These no-background metrics answer
+  # Also compute precision / recall / F1 from the confusion matrix with the
+  # 'background' row and column removed. These no-background metrics answer
   # 'given a detection, was the class correct?' without penalising missed
   # detections (FN-as-background) or false alarms (FP-as-background).
-  # The standard mAP/precision/recall metrics are still computed regardless.
+  # The standard mAP / precision / recall metrics are still computed regardless.
   exclude_background: true
 
 # --- Export options ---

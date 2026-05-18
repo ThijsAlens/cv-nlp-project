@@ -24,7 +24,7 @@ sys.path.insert(0, str(_PROJECT_ROOT / "src"))
 from waste_detector.data.taco_manager import TacoDatasetManager
 
 # ---------------------------------------------------------------
-# Configuration -- edit before running
+# Configuration (edit before running)
 # ---------------------------------------------------------------
 
 # Root directory where TACO raw data and the prepared dataset will be stored.

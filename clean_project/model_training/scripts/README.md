@@ -15,7 +15,7 @@ edit the config YAML instead.
 | `run_prepare_taco.py` | (inline CONFIG block) | Download and convert the TACO litter dataset to YOLO format. Only needed if using TACO data. |
 | `run_merge_classes.py` | (inline CONFIG block) | Build a class-merged sibling copy of an existing YOLO dataset. Images are linked (not copied); only the label `.txt` files and a new `data.yaml` are written. |
 | `run_split_finetune_dataset.py` | (inline CONFIG block) | Split `FINALE_TESTSET_merged` (200 real-world images) into a `train/val/test` layout for fine-tuning. Writes `split_manifest.json` recording exactly which images landed in each split so the held-out test set can be audited later. |
-| `run_finetune_train.py` | `finetune_train_config.yaml` | Thin wrapper around `run_train.py` that points at the fine-tune YAML. Fine-tunes the trained checkpoint on the split produced by `run_split_finetune_dataset.py` with hyperparameters tuned for the small (100-image) regime. |
+| `run_finetune_train.py` | `finetune_train_config.yaml` | Thin wrapper around `run_train.py` that points at the fine-tune YAML. Fine-tunes the trained checkpoint on the split produced by `run_split_finetune_dataset.py`, with hyperparameters tuned for the small (100-image) set. |
 | `run_finetune_evaluate.py` | `finetune_evaluate_config.yaml` | Thin wrapper around `run_evaluate.py` that evaluates the fine-tuned checkpoint on the 80 held-out real-world images. |
 
 ## How to run
@@ -47,8 +47,8 @@ uv run python scripts/run_split_finetune_dataset.py
 
 # 2. Fine-tune the trained checkpoint on the 100 training images.
 #    Hyperparameters live in 'config/finetune_train_config.yaml' (heavier
-#    backbone freezing, fewer epochs, gentler augmentation -- tuned to
-#    avoid overfitting and catastrophic forgetting on the tiny set).
+#    backbone freezing, fewer epochs, gentler augmentation; tuned to avoid
+#    overfitting and catastrophic forgetting on the tiny set).
 uv run python scripts/run_finetune_train.py
 
 # 3. Evaluate on the 80 truly-unseen images (the ones in
