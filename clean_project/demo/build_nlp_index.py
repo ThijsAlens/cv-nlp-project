@@ -6,7 +6,7 @@ documents in 'nlp/documents/general/'. Run this once before starting the
 demo, and again whenever files in that folder are added or changed.
 
 The BM25 index (for 'nlp/documents/regions/') is always rebuilt automatically
-when the demo starts and does NOT require this script.
+when the demo starts and does not require this script.
 
 Usage:
   uv run python build_nlp_index.py

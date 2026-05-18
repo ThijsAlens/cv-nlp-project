@@ -51,12 +51,12 @@ def run_nlp_thread(
     # Wait for the vision thread to initialise before accepting input.
     time.sleep(2)
 
-    # Chat history is shared between the input loop and the Ctrl+S handler,
+    # Chat history is shared between the input loop and the Ctrl+W handler,
     # so all reads and writes go through this lock to keep them consistent.
     chat_history: List[dict] = []
     history_lock = threading.Lock()
 
-    # Local helper so 'start' and Ctrl+S share the exact same logic.
+    # Local helper so 'start' and Ctrl+W share the exact same logic.
     def _trigger_start() -> None:
         """Read the latest detection, reset history, and run a start turn."""
         # Read the latest vision results from the shared temp file.
@@ -110,7 +110,7 @@ def run_nlp_thread(
 
             # -------------------------------------------------------
             if command == "start":
-                # Same code path as the Ctrl+S shortcut.
+                # Same code path as the Ctrl+W shortcut.
                 _trigger_start()
 
             # -------------------------------------------------------
@@ -123,7 +123,7 @@ def run_nlp_thread(
             # -------------------------------------------------------
             else:
                 # Continue the conversation with full RAG context.
-                # Snapshot the history under the lock so a concurrent Ctrl+S
+                # Snapshot the history under the lock so a concurrent Ctrl+W
                 # cannot mutate the list while the LLM call is in flight.
                 with history_lock:
                     history_snapshot = list(chat_history)

@@ -7,6 +7,7 @@ evaluate it, and run inference with automatic bin routing.
 
 ```bash
 # Install dependencies (requires Python 3.11-3.12 and uv)
+uv lock --upgrade
 uv sync
 
 # Edit the dataset path and model settings

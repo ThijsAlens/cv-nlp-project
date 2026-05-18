@@ -27,9 +27,8 @@ def run_gui(
     exception during 'mainloop'). After it returns, the caller is expected to
     tear down the rest of the demo.
     """
-    # Construct first, then run. Splitting the two lets future callers attach
-    # extra hooks (for example, registering additional shortcuts) between the
-    # constructor and the blocking mainloop call.
+    # Construct first, then run. Keeping these two steps separate leaves room
+    # for any extra setup between the constructor and the blocking mainloop call.
     gui = WasteSorterGUI(
         assistant=assistant,
         temp_dir=temp_dir,

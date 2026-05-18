@@ -86,7 +86,7 @@ class WasteSorterGUI:
         self._assistant = assistant
         self._temp_dir = temp_dir
         self._stop_event = stop_event
-        # Clamp the refresh interval so an over-eager YAML value cannot peg the CPU.
+        # Clamp the refresh interval so a very low YAML value cannot peg the CPU.
         self._refresh_ms = max(20, int(refresh_ms))
 
         # Chat history shared between the Send and Start actions. Touched only
@@ -141,7 +141,7 @@ class WasteSorterGUI:
         # Using ttk.PanedWindow keeps the look consistent with the buttons.
         self._paned = ttk.PanedWindow(self._root, orient=tk.HORIZONTAL)
         self._paned.pack(fill=tk.BOTH, expand=True)
-        # Local alias so the rest of the method reads naturally.
+        # Local alias for the rest of the method.
         paned = self._paned
 
         # ---- Left pane: live annotated feed ----
@@ -164,17 +164,17 @@ class WasteSorterGUI:
         chat_frame = ttk.Frame(paned, padding=4)
         paned.add(chat_frame, weight=2)
 
-        # Input row is packed FIRST, anchored to the bottom of the chat pane,
-        # so the buttons are guaranteed reserved space no matter how tall the
-        # transcript becomes. Packing the transcript first with expand=True
-        # has been known to push the row off-screen on narrow windows.
+        # Input row is packed first, anchored to the bottom of the chat pane,
+        # so the buttons always have reserved space no matter how tall the
+        # transcript gets. Packing the transcript first with expand=True can
+        # push the input row off-screen on narrow windows.
         input_row = ttk.Frame(chat_frame)
         input_row.pack(side=tk.BOTTOM, fill=tk.X, pady=(4, 0))
 
         # Read-only chat transcript. Disabled state prevents the user from
-        # accidentally editing the bot's replies. Font size 15 sits between
-        # the original 10pt (too small to read from a distance) and 20pt
-        # (cramps the buttons on a narrow pane).
+        # accidentally editing the bot's replies. Font size 15 is a compromise:
+        # 10pt is too small to read from a distance, 20pt cramps the buttons
+        # on a narrow pane.
         self._chat_text = scrolledtext.ScrolledText(
             chat_frame,
             wrap=tk.WORD,
@@ -190,8 +190,8 @@ class WasteSorterGUI:
             "system", foreground="#8a8a8a", font=("Segoe UI", 13, "italic")
         )
 
-        # Action buttons are packed to the RIGHT of the input row first so
-        # they claim their natural width before the entry. The entry then
+        # Action buttons are packed to the right of the input row first so
+        # they get their preferred width before the entry. The entry then
         # expands to fill whatever space is left.
         self._clear_btn = ttk.Button(input_row, text="Clear", command=self._on_clear)
         self._clear_btn.pack(side=tk.RIGHT, padx=(4, 0))
@@ -201,7 +201,7 @@ class WasteSorterGUI:
         self._start_btn.pack(side=tk.RIGHT, padx=(4, 0))
 
         # Entry widget plus its backing StringVar for easy clearing. Packed
-        # LAST so it takes only the leftover space, leaving room for buttons.
+        # last so it only takes the leftover space, leaving room for buttons.
         self._input_var = tk.StringVar()
         self._input_entry = ttk.Entry(
             input_row,
@@ -209,7 +209,7 @@ class WasteSorterGUI:
             font=("Segoe UI", 15),
         )
         self._input_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
-        # Enter key sends the message, matching common chat UX.
+        # Enter key sends the message, same as in most chat apps.
         self._input_entry.bind("<Return>", lambda _e: self._on_send())
         self._input_entry.focus_set()
 
@@ -324,7 +324,7 @@ class WasteSorterGUI:
 
             # -------------------------------------------------------
             elif kind == "system":
-                # Generic status line (currently unused but kept for future hooks).
+                # Generic status line (currently unused).
                 self._append("system", f"{text}\n")
 
     # -----------------------------------------------------------
@@ -348,7 +348,7 @@ class WasteSorterGUI:
         self._append("user", f"You: {user_input}\n\n")
         self._chat_history.append({"role": "user", "content": user_input})
 
-        # Snapshot the history WITHOUT the current turn; 'WasteAssistant.chat'
+        # Snapshot the history without the current turn, since 'WasteAssistant.chat'
         # appends the new user message itself.
         history_snapshot = list(self._chat_history[:-1])
         self._set_buttons_enabled(False)
@@ -404,7 +404,7 @@ class WasteSorterGUI:
         self._stop_event.set()
 
     # -----------------------------------------------------------
-    # Worker-thread targets (NOT in Tk main thread - never touch widgets)
+    # Worker-thread targets (not in Tk main thread, never touch widgets)
     # -----------------------------------------------------------
 
     def _worker_chat(self, user_input: str, history_snapshot: list) -> None:
@@ -466,8 +466,26 @@ class WasteSorterGUI:
 
     def _position_sash(self) -> None:
         """Place the pane divider so the image pane starts out square."""
+        # Flush any pending layout work so 'winfo_width' returns the real
+        # paned-window width instead of the placeholder '1' value it has
+        # before the first <Configure> event.
+        self._root.update_idletasks()
+        paned_w = self._paned.winfo_width()
+
+        # If the paned has not been mapped yet, try again on the next tick.
+        # Without this guard, sashpos can be clamped to a tiny width and the
+        # chat pane collapses to zero pixels.
+        if paned_w <= 1:
+            self._root.after(50, self._position_sash)
+            return
+
+        # Keep at least 'min_chat' px reserved for the chat pane so the sash
+        # cannot be placed past the right edge on small or slow-to-realise
+        # windows.
+        min_chat = 280
+        sash_x = min(self._initial_sash_x, max(0, paned_w - min_chat))
         try:
-            self._paned.sashpos(0, self._initial_sash_x)
+            self._paned.sashpos(0, sash_x)
         except tk.TclError:
             # Window not fully realised yet; ignore - the user can drag the
             # divider manually, and subsequent resizes work normally.

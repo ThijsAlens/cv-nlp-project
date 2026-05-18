@@ -15,7 +15,7 @@ Usage:
 
 import os
 
-# Must be set BEFORE any 'import cv2' (directly or transitively via ultralytics).
+# Must be set before any 'import cv2' (directly or transitively via ultralytics).
 # Without this, MSMF (the default Windows capture backend) opens USB cameras
 # but silently fails to deliver frames, leaving 'output.png' frozen.
 os.environ.setdefault("OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS", "0")
@@ -124,12 +124,12 @@ def main() -> None:
     # --- Start daemon threads ---
     print("Starting vision and chatbot threads...")
     camera_index = int(cfg["vision"].get("camera_index", 0))
-    # Read the rolling-window options. They are optional, so defaults are
-    # supplied here for older YAML files that do not define them.
+    # Read the rolling-window options. Both keys are optional, defaults are
+    # supplied here in case the YAML does not define them.
     use_rolling_window = bool(cfg["vision"].get("use_rolling_window", False))
     rolling_window_size = int(cfg["vision"].get("rolling_window_size", 20))
     # Maximum bounding box size as a fraction of the frame side. 1.0 disables
-    # the filter (legacy behaviour for older YAML files without this key).
+    # the filter, which is also the default when the key is missing from the YAML.
     max_bbox_size = float(cfg["vision"].get("max_bbox_size", 1.0))
     vision_thread = threading.Thread(
         target=run_vision_thread,
@@ -146,8 +146,8 @@ def main() -> None:
     )
 
     # Read the optional 'gui' section. When 'enabled' is true the GUI runs
-    # on the main thread; the terminal-based NLP runner is skipped. When
-    # false or absent, the original terminal behaviour is preserved verbatim.
+    # on the main thread and the terminal-based NLP runner is skipped. When
+    # false or absent, the chat runs in the terminal.
     gui_cfg = cfg.get("gui") or {}
     gui_enabled = bool(gui_cfg.get("enabled", False))
     gui_refresh_ms = int(gui_cfg.get("refresh_ms", 100))

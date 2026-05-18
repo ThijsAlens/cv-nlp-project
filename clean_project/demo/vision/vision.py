@@ -70,7 +70,7 @@ class RollingPredictionWindow:
             return None
 
         # Pick the most frequent class. Counter.most_common breaks ties by
-        # insertion order, which is fine for our use case.
+        # insertion order, which is good enough here.
         top_cls = counts.most_common(1)[0][0]
         avg_conf = sum(confs[top_cls]) / len(confs[top_cls])
         return top_cls, avg_conf
@@ -116,7 +116,7 @@ def _filter_oversized_boxes(results, frame_h: int, frame_w: int, max_fraction: f
     """
     Drop bounding boxes that cover almost the entire frame.
 
-    A box is removed when BOTH its width and its height exceed
+    A box is removed when both its width and its height exceed
     'max_fraction * frame_side'. This targets the case where YOLO produces a
     full-frame 'phantom' detection (for example, calling an empty desk
     'cardboard') without filtering out legitimate long, thin objects.
@@ -142,7 +142,7 @@ def _filter_oversized_boxes(results, frame_h: int, frame_w: int, max_fraction: f
     max_w = max_fraction * frame_w
     max_h = max_fraction * frame_h
 
-    # Boolean mask: True for boxes that should be KEPT (not oversized).
+    # Boolean mask: True for boxes that should be kept (not oversized).
     keep_mask = ~((box_widths > max_w) & (box_heights > max_h))
 
     # Replace the boxes container with the filtered subset. Ultralytics'
@@ -174,15 +174,17 @@ def _infer_and_save(
         "image": "<path to output.png>"
       }
 
-    If 'window' is provided, the rolling window smoothing is applied to the
-    displayed class and confidence. Otherwise the raw per-frame YOLO output
-    is used.
+    If 'window' is provided AND the current frame has at most one detection,
+    the rolling window smoothing is applied to the displayed class and
+    confidence. With multiple detections in view, the window cannot tell the
+    objects apart and would label every box with the same most-frequent class,
+    so the raw per-frame YOLO output is used instead.
     """
     # Run YOLO on the in-memory frame. Avoids an extra disk round-trip.
     results = model(frame, save=False, save_txt=False, verbose=False)[0]
 
     # Drop bounding boxes that cover almost the entire frame. This must happen
-    # BEFORE the detection list is built so that oversized boxes never reach
+    # before the detection list is built so that oversized boxes never reach
     # the rolling window or the JSON output.
     h, w = frame.shape[:2]
     _filter_oversized_boxes(results, h, w, max_bbox_fraction)
@@ -196,8 +198,12 @@ def _infer_and_save(
 
     output_image_path = output_dir / "output.png"
 
-    # ---- Branch 1: rolling window enabled. ----
-    if window is not None:
+    # ---- Branch 1: rolling window enabled AND at most one object in view. ----
+    # The window holds a single class history per object, so it can only smooth
+    # a one-object scene. With multiple objects we fall through to Branch 2 so
+    # each box keeps its own per-frame class instead of all sharing the most
+    # frequent class in the window.
+    if window is not None and len(current_detections) <= 1:
         # Update the window with this frame, then read back the smoothed result.
         window.add_frame(current_detections)
         smoothed = window.get_smoothed()
@@ -215,7 +221,7 @@ def _infer_and_save(
             # The NLP thread only needs the smoothed class name.
             labels = [results.names[int(cls_id)]]
 
-    # ---- Branch 2: rolling window disabled, original behaviour. ----
+    # ---- Branch 2: rolling window disabled OR multiple objects in view. ----
     else:
         annotated_frame = results.plot()
         cv2.imwrite(str(output_image_path), annotated_frame)
@@ -253,7 +259,7 @@ def run_vision_thread(
     are smoothed over the last 'rolling_window_size' frames. The bounding box
     positions are never smoothed.
 
-    'max_bbox_size' is a fraction in (0, 1]. Any detection whose width AND
+    'max_bbox_size' is a fraction in (0, 1]. Any detection whose width and
     height both exceed that fraction of the frame is dropped before the
     rolling window or the JSON output sees it. A value of 1.0 disables the filter.
     """

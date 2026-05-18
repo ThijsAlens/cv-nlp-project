@@ -18,7 +18,7 @@ the displayed class label and confidence are smoothed across the last
 - That class's confidences are averaged.
 - All current-frame bounding boxes are drawn at their detected positions but
   re-labeled with the smoothed class and average confidence.
-- The bounding box geometry is NOT smoothed because positions are usually stable.
+- The bounding box geometry is not smoothed because positions are usually stable.
 
 This removes flicker between visually similar classes (for example 'Plastic'
 vs 'Metal') without freezing the box location.
@@ -29,7 +29,7 @@ When `use_rolling_window` is `false`, the raw per-frame YOLO output is shown.
 
 `vision.max_bbox_size` (a fraction in `(0, 1]`) drops detections whose
 bounding box is too large relative to the frame. A box is removed when
-BOTH its width and its height exceed `max_bbox_size * 640`. Set this to
+both its width and its height exceed `max_bbox_size * 640`. Set this to
 `1.0` to disable the filter.
 
 This is intended to suppress 'phantom' full-frame detections, where YOLO

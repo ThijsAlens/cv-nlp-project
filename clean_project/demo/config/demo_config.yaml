@@ -9,24 +9,24 @@ vision:
   # Name of the model bundle folder inside 'models/'.
   # The folder must contain a 'weights/best.pt' file.
   # Example: if the bundle is at 'models/yolov8n_garbage_v1/', set this to 'yolov8n_garbage_v1'.
-  model_bundle: yolov8n_garbage_v2-1-4
+  model_bundle: yolov8n_garbage_v4-2_finetune_real
   # OpenCV camera index passed to cv2.VideoCapture.
   # 0 = USB camera, 1 = internal laptop webcam.
   camera_index: 0
-  # Rolling prediction window. When enabled, the displayed class and confidence
-  # for each detected box are taken from the most frequent class across the last
-  # 'rolling_window_size' frames (with the confidence averaged over that class).
-  # The bounding box geometry is NOT smoothed and always comes from the current frame.
-  # Set 'use_rolling_window' to false to display the raw per-frame YOLO output.
+  # Rolling prediction window. When on, the class shown for each box is the
+  # most common one over the last 'rolling_window_size' frames, and the
+  # confidence is averaged across those frames. The box position itself is not
+  # smoothed, it always comes from the current frame.
+  # Set 'use_rolling_window' to false to just show the raw per-frame YOLO output.
   use_rolling_window: true
   rolling_window_size: 20
-  # Maximum allowed bounding box size, expressed as a fraction of the frame side.
-  # A detection is dropped when BOTH its width and its height exceed this fraction
-  # of the frame (640x640). For example, with a value of 0.8 any box larger than
-  # 512x512 is ignored. This suppresses the 'phantom' full-frame predictions that
-  # YOLO can produce when nothing is in front of the camera (for example, calling
-  # an empty desk 'cardboard').
-  # Set to 1.0 to disable the filter.
+  # Maximum allowed bounding box size, as a fraction of the frame side.
+  # A detection is dropped when both its width and its height go above this
+  # fraction of the 640x640 frame. With 0.8, any box bigger than 512x512 is
+  # ignored. This filters out the occasional full-frame 'phantom' predictions
+  # YOLO makes when nothing is in front of the camera (like labelling an empty
+  # desk as 'cardboard').
+  # Set to 1.0 to turn the filter off.
   max_bbox_size: 0.8
 
 # --- NLP / chatbot ---
@@ -43,16 +43,15 @@ nlp:
   debug: false
 
 # --- Optional graphical user interface ---
-# When 'enabled' is true, the demo opens a window showing the live annotated
-# webcam feed on the left and the chatbot conversation on the right, instead of
-# using the terminal. When false, the demo behaves exactly as before: the
-# annotated feed is written to 'temp/output.png' and the chat runs in the
-# terminal.
+# When 'enabled' is true, the demo opens a window with the live annotated
+# webcam feed on the left and the chatbot conversation on the right.
+# When false, the annotated feed is written to 'temp/output.png' and the chat
+# runs in the terminal.
 gui:
   enabled: true
-  # Refresh rate for the live feed inside the GUI, in milliseconds. Lower means
-  # smoother but more CPU. The vision thread itself runs as fast as YOLO allows;
-  # this only controls how often the GUI re-reads 'temp/output.png'.
+  # Refresh rate for the GUI's live feed, in milliseconds. Lower is smoother but
+  # uses more CPU. The vision thread itself runs as fast as YOLO allows, this
+  # only controls how often the GUI re-reads 'temp/output.png'.
   refresh_ms: 100
 
 # --- File paths (relative to the project root) ---
